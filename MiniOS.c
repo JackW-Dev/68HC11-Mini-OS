@@ -1,20 +1,19 @@
 #include <stdio.h>
 #include <string.h>
 
-/*Function Prototypes*/
-int menu();
-int modifyMemory();
-int displayMemory();
-int disassemble();
-int loadFile();
-int demo();
-
 /*Structure definitions*/
 typedef struct {
 	int hexValue;
 	int expectedArgs;
 	char functionName[5];	
 } assemblyFunction;
+
+/*Function Prototypes*/
+int modifyMemory();
+int displayMemory();
+int disassemble();
+int loadFile();
+int demo();
 
 void main(void) {
 	/*
@@ -24,16 +23,53 @@ void main(void) {
 	Date: 20/02/2021
 	Version: 1.0
 	Change log:
+	v1.0 - Infinite loop calling menu and branching to correct functions
+	v1.1 - Menu function removed and now built into main (logic error with menu function)
 	Produced by: Jack Walker
 	*/
 	
-	for(;;) {
-		int mode;
-	
-		mode = menu();
-		/*printf("%i\n\r", mode);*/
+	for(;;) {		
+		char inputMode[4];
+		unsigned int validData = 0, operationMode = 0, inputStartAddress = 0, inputEndAddress = 0;
 		
-		switch(mode) {
+		printf("Welcome to Jack's 68HC11 MiniOS!\n\r"
+		"Please select one of the following operational modes:\n\r"
+		"Modify Memory - mm [START ADDRESS]\n\r"
+		"Display Memory - dm [START ADDRESS]\n\r"
+		"Disassemble Code - dis [START ADDRESS] [END ADDRESS]\n\r"
+		"Load File - lf\n\r"
+		"Demo Program - demo\n\r");
+		
+		do {
+			printf("Mode: ");
+			scanf("%s", &inputMode);			
+			if(strcmp(inputMode, "mm") == 0) {
+				scanf("%x", &inputStartAddress);
+				printf("%x\n\r", inputStartAddress);			
+				operationMode = 1;
+				validData = 1;			
+			} else if(strcmp(inputMode, "dm") == 0) {			
+				scanf("%x", &inputStartAddress);
+				printf("%x\n\r", inputStartAddress);			
+				operationMode = 2;
+				validData = 1;			
+			} else if(strcmp(inputMode, "dis") == 0) {			
+				scanf("%x %x", &inputStartAddress, &inputEndAddress);
+				printf("%x %x\n\r", inputStartAddress, inputEndAddress);					
+				operationMode = 3;
+				validData = 1;			
+			} else if(strcmp(inputMode, "lf") == 0) {					
+				operationMode = 4;
+				validData = 1;			
+			} else if(strcmp(inputMode, "demo") == 0) {				
+				operationMode = 5;
+				validData = 1;			
+			} else {
+				inputMode[0] = '\0';
+			}		
+		} while(validData != 1);	
+			
+		switch(operationMode) {
 			case 1:
 				modifyMemory();
 				break;
@@ -50,66 +86,7 @@ void main(void) {
 				demo();
 				break;
 		}	
-	}
-	
-}
-
-int menu() {	
-	/*
-	Function: Menu
-	Operation: Provide a validated menu for the user to select system operation mode
-	Returns: An integer value representing the desired action
-	Date: 20/02/2021
-	Version: 1.2
-	Change log:
-	v1.0 - Function will validate user input to only accept valid code
-	v1.1 - Switch case statement added to branch to corresponding functions
-	v1.2 - Infinite for loop enclosing content to allow menu to re-run when other functions conclude
-	v1.3 - Added functionality for accepting start and end address params for functions that need them
-	Produced by: Jack Walker
-	*/
-	
-	char inputMode[4];
-	unsigned int validData = 0, operationMode = 0, inputStartAddress = 0, inputEndAddress = 0;
-	
-	printf("Welcome to Jack's 68HC11 MiniOS!\n\r"
-	"Please select one of the following operational modes:\n\r"
-	"Modify Memory - mm [START ADDRESS]\n\r"
-	"Display Memory - dm [START ADDRESS]\n\r"
-	"Disassemble Code - dis [START ADDRESS] [END ADDRESS]\n\r"
-	"Load File - lf\n\r"
-	"Demo Program - demo\n\r");
-	
-	do {
-		printf("Mode: ");
-		scanf("%s", &inputMode);
-		
-		if(strcmp(inputMode, "mm") == 0) {
-			scanf("%x", &inputStartAddress);
-			printf("%x\n\r", inputStartAddress);			
-			operationMode = 1;
-			validData = 1;			
-		} else if(strcmp(inputMode, "dm") == 0) {			
-			scanf("%x", &inputStartAddress);
-			printf("%x\n\r", inputStartAddress);			
-			operationMode = 2;
-			validData = 1;			
-		} else if(strcmp(inputMode, "dis") == 0) {			
-			scanf("%x %x", &inputStartAddress, &inputEndAddress);
-			printf("%x %x\n\r", inputStartAddress, inputEndAddress);					
-			operationMode = 3;
-			validData = 1;			
-		} else if(strcmp(inputMode, "lf") == 0) {					
-			operationMode = 4;
-			validData = 1;			
-		} else if(strcmp(inputMode, "demo") == 0) {				
-			operationMode = 5;
-			validData = 1;			
-		} else {
-			inputMode[0] = '\0';
-		}		
-	} while(validData != 1);	
-	return operationMode;
+	}	
 }
 
 int modifyMemory() {
@@ -561,3 +538,18 @@ int demo() {
 	
 	printf("Demo\n\r");
 }
+
+/*
+Function: Menu (Now Removed)
+Operation: Provide a validated menu for the user to select system operation mode
+Returns: An integer value representing the desired action
+Date: 20/02/2021
+Version: 1.2
+Change log:
+v1.0 - Function will validate user input to only accept valid code
+v1.1 - Switch case statement added to branch to corresponding functions
+v1.2 - Infinite for loop enclosing content to allow menu to re-run when other functions conclude
+v1.3 - Added functionality for accepting start and end address params for functions that need them
+v1.4 - After finding a logic error (can't return params and operationMode), the function was repurposed as part of main
+Produced by: Jack Walker
+*/
