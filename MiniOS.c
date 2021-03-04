@@ -23,6 +23,7 @@ void main(void) {
 	Returns: Void
 	Date: 20/02/2021
 	Version: 1.0
+	Change log:
 	Produced by: Jack Walker
 	*/
 	
@@ -64,45 +65,50 @@ int menu() {
 	v1.0 - Function will validate user input to only accept valid code
 	v1.1 - Switch case statement added to branch to corresponding functions
 	v1.2 - Infinite for loop enclosing content to allow menu to re-run when other functions conclude
+	v1.3 - Added functionality for accepting start and end address params for functions that need them
 	Produced by: Jack Walker
 	*/
 	
-	char userInput[4];
-	int validData = 0, operationMode = 0;
+	char inputMode[4];
+	unsigned int validData = 0, operationMode = 0, inputStartAddress = 0, inputEndAddress = 0;
 	
 	printf("Welcome to Jack's 68HC11 MiniOS!\n\r"
 	"Please select one of the following operational modes:\n\r"
-	"Modify Memory - mm\n\r"
-	"Display Memory - dm\n\r"
-	"Disassemble Code - dis\n\r"
+	"Modify Memory - mm [START ADDRESS]\n\r"
+	"Display Memory - dm [START ADDRESS]\n\r"
+	"Disassemble Code - dis [START ADDRESS] [END ADDRESS]\n\r"
 	"Load File - lf\n\r"
 	"Demo Program - demo\n\r");
 	
 	do {
 		printf("Mode: ");
-		scanf("%s", &userInput);
-		printf("User Input: %s\n\r", userInput);
+		scanf("%s", &inputMode);
 		
-		if(strcmp(userInput, "mm") == 0) {
+		if(strcmp(inputMode, "mm") == 0) {
+			scanf("%x", &inputStartAddress);
+			printf("%x\n\r", inputStartAddress);			
 			operationMode = 1;
-			validData = 1;
-		} else if(strcmp(userInput, "dm") == 0) {
+			validData = 1;			
+		} else if(strcmp(inputMode, "dm") == 0) {			
+			scanf("%x", &inputStartAddress);
+			printf("%x\n\r", inputStartAddress);			
 			operationMode = 2;
-			validData = 1;
-		} else if(strcmp(userInput, "dis") == 0) {
+			validData = 1;			
+		} else if(strcmp(inputMode, "dis") == 0) {			
+			scanf("%x %x", &inputStartAddress, &inputEndAddress);
+			printf("%x %x\n\r", inputStartAddress, inputEndAddress);					
 			operationMode = 3;
-			validData = 1;
-		} else if(strcmp(userInput, "lf") == 0) {
+			validData = 1;			
+		} else if(strcmp(inputMode, "lf") == 0) {					
 			operationMode = 4;
-			validData = 1;
-		} else if(strcmp(userInput, "demo") == 0) {
+			validData = 1;			
+		} else if(strcmp(inputMode, "demo") == 0) {				
 			operationMode = 5;
-			validData = 1;
+			validData = 1;			
 		} else {
-			userInput[0] = '\0';
+			inputMode[0] = '\0';
 		}		
-	} while(validData != 1);
-	
+	} while(validData != 1);	
 	return operationMode;
 }
 
@@ -113,6 +119,7 @@ int modifyMemory() {
 	Returns: Integer error code
 	Date: 20/02/2021
 	Version: 1.0
+	Change log:
 	Produced by: Jack Walker
 	*/
 	
@@ -121,7 +128,7 @@ int modifyMemory() {
 	/*Step 3 - Validate that the data is storable and store (loop if can't store)*/
 	/*Step 4 - Increment to next address and repeat process*/
 	/*Step 5 - Terminate if '.' is input*/
-	
+		
 	printf("Modify Memory\n\r");
 }
 
@@ -132,6 +139,7 @@ int displayMemory() {
 	Returns: Integer error code
 	Date: 20/02/2021
 	Version: 1.0
+	Change log:
 	Produced by: Jack Walker
 	*/
 	
@@ -148,7 +156,10 @@ int disassemble() {
 	Operation: Convert hex into assembly language code
 	Returns: Integer error code
 	Date: 20/02/2021
-	Version: 1.0
+	Version: 1.1
+	Change log:
+	v1.0 - Function stub outputting "disassemble"
+	v1.1 - Added assemblyFunction structs and populated array with assembly function details
 	Produced by: Jack Walker
 	*/
 	
@@ -504,7 +515,7 @@ int disassemble() {
 	hexCodes[69].expectedArgs = 1;
 	strcpy(hexCodes[69].functionName, "STD");
 	
-	int i = 0;
+	/*int i = 0;
 	
 	for (i; i < 70; i++) {
 		printf("hexCodes[%d]\n\r"
@@ -512,7 +523,7 @@ int disassemble() {
 		"Expected Arguments: %x\n\r"
 		"Function Name: %s\n\n\r",
 		i, hexCodes[i].hexValue, hexCodes[i].expectedArgs, hexCodes[i].functionName);
-	}	
+	}*/	
 }
 
 int loadFile() {
@@ -522,6 +533,7 @@ int loadFile() {
 	Returns: Integer error code
 	Date: 20/02/2021
 	Version: 1.0
+	Change log:
 	Produced by: Jack Walker
 	*/
 	
@@ -541,6 +553,7 @@ int demo() {
 	Returns: Integer error code
 	Date: 20/02/2021
 	Version: 1.0
+	Change log:
 	Produced by: Jack Walker
 	*/
 	
