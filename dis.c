@@ -1,400 +1,381 @@
 #include <stdio.h>
 #include <string.h>
 
-/*Structure definitions*/
-typedef struct {
-	int hexValue;
-	int expectedArgs;
-	char functionName[5];	
-} assemblyFunction;
+typedef struct assemblyFunc {
+    char functionName[8];
+    int expectedArgs;
+} assemblyFunc;
 
-void main() {
-	unsigned int startAddress = 0, endAddress = 0;
-	
-	printf("Start address: ");
-	scanf("%x", &startAddress);
-	
-	printf("End address: ");
-	scanf("%x", &endAddress);
-	
-	
-	disassemble(startAddress, endAddress);
-}
-
-int disassemble(unsigned int startAddress, unsigned int endAddress) {
-	/*
-	Function: Disassemble
-	Operation: Convert hex into assembly language code
-	Returns: Integer error code
-	Date: 20/02/2021
-	Version: 1.1
-	Change log:
-	v1.0 - Function stub outputting "disassemble"
-	v1.1 - Added assemblyFunction structs and populated array with assembly function details
-	Produced by: Jack Walker
-	*/
-	
-	/*Step 1 - Create array of assemblyFunction structures*/
-	/*Step 2 - Parse memory determining the function and expectedArgs for each*/
-	/*Step 3 - Convert the hex to the corresponding function and read the expectedArgs as data*/
-	/*Step 4 - Format output*/
-	
-	printf("Start address: %x\n\r", startAddress);	
-	printf("End address: %x\n\r", endAddress);	
-	printf("Disassemble\n\r");
-	
-	assemblyFunction hexCodes[70];	/*There are 70 assembly functions that must be handled for this assignment*/
-	
-	/*Filling array with struct values*/
-	
-	/*Addition Functitons*/
-	
-	hexCodes[0].hexValue = 0x1B;
-	hexCodes[0].expectedArgs = 0;
-	strcpy(hexCodes[0].functionName, "ABA");
-	
-	hexCodes[1].hexValue = 0x3A;
-	hexCodes[1].expectedArgs = 0;
-	strcpy(hexCodes[1].functionName, "ABX");
-	
-	/*Unsure about hex code when using extended due to it actually needing two hex values*/	
-	hexCodes[2].hexValue = 0x183A;
-	hexCodes[2].expectedArgs = 0;
-	strcpy(hexCodes[2].functionName, "ABY");
+int main() {    
+    struct assemblyFunc functions[255];
+    unsigned char *startAddress, *endAddress, ptrRange, i, data, data2;
+    unsigned char stringInp[5];
+    char temp[10], temp2[5], temp3[5];
+    
+        /*Populate functions array with assembly function data*/
+    
+    /*Addition Functions*/
+    
+    strcpy(functions[0x1B].functionName, "ABA ");
+    functions[0x1B].expectedArgs = 0;
+    
+	strcpy(functions[0x3A].functionName, "ABX ");
+    functions[0x3A].expectedArgs = 0;
+    
+	/*Unsure about hex code when using extended due to it actually needing two hex values*/ 
+/*    
+	strcpy(functions[0x183A].functionName, "ABY ");
+	functions[0x183A].expectedArgs = 0;
+*/
 	
 	/*ADCA*/
 	
-	hexCodes[3].hexValue = 0x89;
-	hexCodes[3].expectedArgs = 1;
-	strcpy(hexCodes[3].functionName, "ADCA");
+	/*Usually one byte but can be two*/	
+	strcpy(functions[0x89].functionName, "ADCA #$");
+	functions[0x89].expectedArgs = 2;	
 	
 	/*Unsure about the accepted args for this as it can take 2 but will assume top is 00*/	
-	hexCodes[4].hexValue = 0x99;
-	hexCodes[4].expectedArgs = 2;
-	strcpy(hexCodes[4].functionName, "ADCA");
+	strcpy(functions[0x99].functionName, "ADCA $");
+	functions[0x99].expectedArgs = 2;
 	
-	hexCodes[5].hexValue = 0xB9;
-	hexCodes[5].expectedArgs = 2;
-	strcpy(hexCodes[5].functionName, "ADCA");
+	strcpy(functions[0xB9].functionName, "ADCA $");
+	functions[0xB9].expectedArgs = 2;
 	
-	hexCodes[6].hexValue = 0xA9;
-	hexCodes[6].expectedArgs = 1;
-	strcpy(hexCodes[6].functionName, "ADCA");
-		
-	/*Unsure about hex code when using extended due to it actually needing two hex values*/	
-	hexCodes[7].hexValue = 0x18A9;
-	hexCodes[7].expectedArgs = 1;
-	strcpy(hexCodes[7].functionName, "ADCA");
+	strcpy(functions[0xA9].functionName, "ADCA $");
+	functions[0xA96].expectedArgs = 1;
+
+	/*Unsure about hex code when using extended due to it actually needing two hex values*/
+/*		
+	strcpy(functions[0x18A9].functionName, "ADCA $");
+	functions[0x18A9].expectedArgs = 1;
+*/
 	
 	/*ADCB*/
 	
-	hexCodes[8].hexValue = 0xC9;
-	hexCodes[8].expectedArgs = 1;
-	strcpy(hexCodes[8].functionName, "ADCB");
+	/*Usually one byte but can be two*/	
+	strcpy(functions[0xC9].functionName, "ADCB #$");
+	functions[0xC9].expectedArgs = 2;
 	
 	/*Unsure about the accepted args for this as it can take 2 but will assume top is 00*/	
-	hexCodes[9].hexValue = 0xD9;
-	hexCodes[9].expectedArgs = 2;
-	strcpy(hexCodes[9].functionName, "ADCB");
+	strcpy(functions[0xD9].functionName, "ADCB $");
+	functions[0xD9].expectedArgs = 2;
 	
-	hexCodes[10].hexValue = 0xF9;
-	hexCodes[10].expectedArgs = 2;
-	strcpy(hexCodes[10].functionName, "ADCB");
+	strcpy(functions[0xF9].functionName, "ADCB $");
+	functions[0xF9].expectedArgs = 2;
 	
-	hexCodes[11].hexValue = 0xE9;
-	hexCodes[11].expectedArgs = 1;
-	strcpy(hexCodes[11].functionName, "ADCB");
-	
-	/*Unsure about hex code when using extended due to it actually needing two hex values*/	
-	hexCodes[12].hexValue = 0x18E9;
-	hexCodes[12].expectedArgs = 1;
-	strcpy(hexCodes[12].functionName, "ADCB");
-	
-	/*ADDA*/
-	
-	hexCodes[13].hexValue = 0x8B;
-	hexCodes[13].expectedArgs = 1;
-	strcpy(hexCodes[13].functionName, "ADDA");
+	strcpy(functions[0xE9].functionName, "ADCB $");
+	functions[0xE9].expectedArgs = 1;
+
+	/*Unsure about hex code when using extended due to it actually needing two hex values*/
+/*	
+	strcpy(functions[0x18E9].functionName, "ADCB $");
+    functions[0x18E9].expectedArgs = 1;
+*/
+    
+    /*ADDA*/
+    
+	/*Usually one byte but can be two*/	
+	strcpy(functions[0x8B].functionName, "ADDA #$");
+	functions[0x8B].expectedArgs = 2;
 	
 	/*Unsure about the accepted args for this as it can take 2 but will assume top is 00*/	
-	hexCodes[14].hexValue = 0x9B;
-	hexCodes[14].expectedArgs = 2;
-	strcpy(hexCodes[14].functionName, "ADDA");
+	strcpy(functions[0x9B].functionName, "ADDA $");
+	functions[0x9B].expectedArgs = 2;
+
+	strcpy(functions[0xBB].functionName, "ADDA $");
+	functions[0xBB].expectedArgs = 2;
 	
-	hexCodes[15].hexValue = 0xBB;
-	hexCodes[15].expectedArgs = 2;
-	strcpy(hexCodes[15].functionName, "ADDA");
-	
-	hexCodes[16].hexValue = 0xAB;
-	hexCodes[16].expectedArgs = 1;
-	strcpy(hexCodes[16].functionName, "ADDA");
-	
-	/*Unsure about hex code when using extended due to it actually needing two hex values*/	
-	hexCodes[17].hexValue = 0x18AB;
-	hexCodes[17].expectedArgs = 1;
-	strcpy(hexCodes[17].functionName, "ADDA");
+	strcpy(functions[0xAB].functionName, "ADDA $");
+	functions[0xAB].expectedArgs = 1;
+
+	/*Unsure about hex code when using extended due to it actually needing two hex values*/
+/*
+	strcpy(functions[0x18AB].functionName, "ADDA $");
+	functions[0x18AB].expectedArgs = 1;
+*/
 	
 	/*ADDB*/
 	
-	hexCodes[18].hexValue = 0xCB;
-	hexCodes[18].expectedArgs = 1;
-	strcpy(hexCodes[18].functionName, "ADDB");
-	
+	/*Usually one byte but can be two*/	
+	strcpy(functions[0xCB].functionName, "ADDB #$");
+	functions[0xCB].expectedArgs = 2;
+		
 	/*Unsure about the accepted args for this as it can take 2 but will assume top is 00*/	
-	hexCodes[19].hexValue = 0xDB;
-	hexCodes[19].expectedArgs = 2;
-	strcpy(hexCodes[19].functionName, "ADDB");
+	strcpy(functions[0xDB].functionName, "ADDB $");
+	functions[0xDB].expectedArgs = 2;
 	
-	hexCodes[20].hexValue = 0xFB;
-	hexCodes[20].expectedArgs = 2;
-	strcpy(hexCodes[20].functionName, "ADDB");
+	strcpy(functions[0xFB].functionName, "ADDB $");
+	functions[0xFB].expectedArgs = 2;
 	
-	hexCodes[21].hexValue = 0xEB;
-	hexCodes[21].expectedArgs = 1;
-	strcpy(hexCodes[21].functionName, "ADDB");
+	strcpy(functions[0xEB].functionName, "ADDB $");
+	functions[0xEB].expectedArgs = 1;
 	
-	/*Unsure about hex code when using extended due to it actually needing two hex values*/	
-	hexCodes[22].hexValue = 0x18EB;
-	hexCodes[22].expectedArgs = 1;
-	strcpy(hexCodes[22].functionName, "ADDB");
-	
+	/*Unsure about hex code when using extended due to it actually needing two hex values*/
+/*
+	strcpy(functions[0x18EB].functionName, "ADDB $");
+	functions[0x18EB].expectedArgs = 1;
+*/
+
 	/*ADDD*/
 	
-	hexCodes[23].hexValue = 0xC3;
-	hexCodes[23].expectedArgs = 2;
-	strcpy(hexCodes[23].functionName, "ADDD");
+	/*Usually one byte but can be two*/	
+	strcpy(functions[0xC3].functionName, "ADDD #$");	
+	functions[0xC3].expectedArgs = 2;
 	
-	hexCodes[24].hexValue = 0xD3;
-	hexCodes[24].expectedArgs = 1;
-	strcpy(hexCodes[24].functionName, "ADDD");
+	/*Unsure about the accepted args for this as it can take 2 but will assume top is 00*/	
+	strcpy(functions[0xD3].functionName, "ADDD $");
+	functions[0xD3].expectedArgs = 1;
 	
-	hexCodes[25].hexValue = 0xF3;
-	hexCodes[25].expectedArgs = 2;
-	strcpy(hexCodes[25].functionName, "ADDD");
+	strcpy(functions[0xF3].functionName, "ADDD $");
+	functions[0xF3].expectedArgs = 2;
 	
-	hexCodes[26].hexValue = 0xE3;
-	hexCodes[26].expectedArgs = 1;
-	strcpy(hexCodes[26].functionName, "ADDD");
+	strcpy(functions[0xE3].functionName, "ADDD $");
+	functions[0xE3].expectedArgs = 1;
 	
-	/*Unsure about hex code when using extended due to it actually needing two hex values*/	
-	hexCodes[27].hexValue = 0x18E3;
-	hexCodes[27].expectedArgs = 1;
-	strcpy(hexCodes[27].functionName, "ADDD");
-	
+	/*Unsure about hex code when using extended due to it actually needing two hex values*/
+/*
+	strcpy(functions[0x18E3].functionName, "ADDD $");
+	functions[0x18E3].expectedArgs = 1;
+*/	
+
 	/*Subtraction Functions*/
 	
 	/*SUBA*/
 	
-	hexCodes[28].hexValue = 0x80;
-	hexCodes[28].expectedArgs = 1;
-	strcpy(hexCodes[28].functionName, "SUBA");
+	/*Usually one byte but can be two*/	
+	strcpy(functions[0x80].functionName, "SUBA #$");
+	functions[0x80].expectedArgs = 2;
 	
 	/*Unsure about the accepted args for this as it can take 2 but will assume top is 00*/	
-	hexCodes[29].hexValue = 0x90;
-	hexCodes[29].expectedArgs = 2;
-	strcpy(hexCodes[29].functionName, "SUBA");
-	
-	hexCodes[30].hexValue = 0xB0;
-	hexCodes[30].expectedArgs = 2;
-	strcpy(hexCodes[30].functionName, "SUBA");
-	
-	hexCodes[31].hexValue = 0xA0;
-	hexCodes[31].expectedArgs = 1;
-	strcpy(hexCodes[31].functionName, "SUBA");
+	strcpy(functions[0x90].functionName, "SUBA $");
+	functions[0x90].expectedArgs = 2;
+
+	strcpy(functions[0xB0].functionName, "SUBA $");
+	functions[0xB0].expectedArgs = 2;
+
+	strcpy(functions[0xA0].functionName, "SUBA $");
+	functions[0xA0].expectedArgs = 1;
 		
-	/*Unsure about hex code when using extended due to it actually needing two hex values*/	
-	hexCodes[32].hexValue = 0x18A0;
-	hexCodes[32].expectedArgs = 1;
-	strcpy(hexCodes[32].functionName, "SUBA");
-	
+	/*Unsure about hex code when using extended due to it actually needing two hex values*/
+/*
+	strcpy(functions[0x18A0].functionName, "SUBA $");
+	functions[0x18A0].expectedArgs = 1;	
+*/	
+
 	/*SUBB*/
-	
-	hexCodes[33].hexValue = 0xC0;
-	hexCodes[33].expectedArgs = 1;
-	strcpy(hexCodes[33].functionName, "SUBB");
+
+	/*Usually one byte but can be two*/	
+	strcpy(functions[0xC0].functionName, "SUBB #$");
+	functions[0xC0].expectedArgs = 2;
 	
 	/*Unsure about the accepted args for this as it can take 2 but will assume top is 00*/	
-	hexCodes[34].hexValue = 0xD0;
-	hexCodes[34].expectedArgs = 2;
-	strcpy(hexCodes[34].functionName, "SUBB");
+	strcpy(functions[0xD0].functionName, "SUBB $");
+	functions[0xD0].expectedArgs = 2;
 	
-	hexCodes[35].hexValue = 0xF0;
-	hexCodes[35].expectedArgs = 2;
-	strcpy(hexCodes[35].functionName, "SUBB");
+	strcpy(functions[0xF0].functionName, "SUBB $");
+	functions[0xF0].expectedArgs = 2;
 	
-	hexCodes[36].hexValue = 0xE0;
-	hexCodes[36].expectedArgs = 1;
-	strcpy(hexCodes[36].functionName, "SUBB");
-		
-	/*Unsure about hex code when using extended due to it actually needing two hex values*/	
-	hexCodes[37].hexValue = 0x18E0;
-	hexCodes[37].expectedArgs = 1;
-	strcpy(hexCodes[37].functionName, "SUBB");
-		
+	strcpy(functions[0xE0].functionName, "SUBB $");
+	functions[0xE0].expectedArgs = 1;
+	
+	/*Unsure about hex code when using extended due to it actually needing two hex values*/
+/*
+	functions[0x18E0].expectedArgs = 1;
+	strcpy(functions[0x18E0].functionName, "SUBB $");
+*/
+	
 	/*SUBD*/
 	
-	hexCodes[38].hexValue = 0x83;
-	hexCodes[38].expectedArgs = 2;
-	strcpy(hexCodes[38].functionName, "SUBD");
+	strcpy(functions[0x83].functionName, "SUBD #$");
+	functions[0x83].expectedArgs = 2;
 	
-	hexCodes[39].hexValue = 0x93;
-	hexCodes[39].expectedArgs = 1;
-	strcpy(hexCodes[39].functionName, "SUBD");
+	strcpy(functions[0x93].functionName, "SUBD $");
+	functions[0x93].expectedArgs = 1;
 	
-	hexCodes[40].hexValue = 0xB3;
-	hexCodes[40].expectedArgs = 2;
-	strcpy(hexCodes[40].functionName, "SUBD");
+	strcpy(functions[0xB3].functionName, "SUBD $");
+	functions[0xB3].expectedArgs = 2;
 	
-	hexCodes[41].hexValue = 0xA3;
-	hexCodes[41].expectedArgs = 1;
-	strcpy(hexCodes[41].functionName, "SUBD");
-		
-	/*Unsure about hex code when using extended due to it actually needing two hex values*/	
-	hexCodes[42].hexValue = 0x18A3;
-	hexCodes[42].expectedArgs = 1;
-	strcpy(hexCodes[42].functionName, "SUBD");
+	strcpy(functions[0xA3].functionName, "SUBD $");
+	functions[0xA3].expectedArgs = 1;
+	
+	/*Unsure about hex code when using extended due to it actually needing two hex values*/
+/*
+	strcpy(functions[0x18A3].functionName, "SUBD $");
+	functions[0x18A3].expectedArgs = 1;
+*/
 	
 	/*Load Accumulator Functions*/	
 	
 	/*LDAA*/
 	
-	hexCodes[43].hexValue = 0x86;
-	hexCodes[43].expectedArgs = 1;
-	strcpy(hexCodes[43].functionName, "LDAA");
+	/*Usually one byte but can be two*/	
+	strcpy(functions[0x86].functionName, "LDAA #$");
+	functions[0x86].expectedArgs = 1;
 	
 	/*Unsure about the accepted args for this as it can take 2 but will assume top is 00*/	
-	hexCodes[44].hexValue = 0x96;
-	hexCodes[44].expectedArgs = 2;
-	strcpy(hexCodes[44].functionName, "LDAA");
+	strcpy(functions[0x96].functionName, "LDAA $");
+	functions[0x96].expectedArgs = 2;
 	
-	hexCodes[45].hexValue = 0xB6;
-	hexCodes[45].expectedArgs = 2;
-	strcpy(hexCodes[45].functionName, "LDAA");
+	strcpy(functions[0xB6].functionName, "LDAA $");
+	functions[0xB6].expectedArgs = 2;	
 	
-	hexCodes[46].hexValue = 0xA6;
-	hexCodes[46].expectedArgs = 1;
-	strcpy(hexCodes[46].functionName, "LDAA");
-		
-	/*Unsure about hex code when using extended due to it actually needing two hex values*/	
-	hexCodes[47].hexValue = 0x18A6;
-	hexCodes[47].expectedArgs = 1;
-	strcpy(hexCodes[47].functionName, "LDAA");
-		
+	strcpy(functions[0xA6].functionName, "LDAA $");
+	functions[0xA6].expectedArgs = 1;
+	
+	/*Unsure about hex code when using extended due to it actually needing two hex values*/
+/*
+	strcpy(functions[0x18A6].functionName, "LDAA $");
+	functions[0x18A6].expectedArgs = 1;
+*/
+	
 	/*LDAB*/
 	
-	hexCodes[48].hexValue = 0xC6;
-	hexCodes[48].expectedArgs = 1;
-	strcpy(hexCodes[48].functionName, "LDAB");
+	/*Usually one byte but can be two*/	
+	strcpy(functions[0xC6].functionName, "LDAB #$");
+	functions[0xC6].expectedArgs = 1;	
 	
 	/*Unsure about the accepted args for this as it can take 2 but will assume top is 00*/	
-	hexCodes[49].hexValue = 0xD6;
-	hexCodes[49].expectedArgs = 2;
-	strcpy(hexCodes[49].functionName, "LDAB");
+	strcpy(functions[0xD6].functionName, "LDAB $");
+	functions[0xD6].expectedArgs = 2;	
 	
-	hexCodes[50].hexValue = 0xF6;
-	hexCodes[50].expectedArgs = 2;
-	strcpy(hexCodes[50].functionName, "LDAB");
+	strcpy(functions[0xF6].functionName, "LDAB $");
+	functions[0xF6].expectedArgs = 2;
 	
-	hexCodes[51].hexValue = 0xE6;
-	hexCodes[51].expectedArgs = 1;
-	strcpy(hexCodes[51].functionName, "LDAB");
-		
+	strcpy(functions[0xE6].functionName, "LDAB $");
+	functions[0xE6].expectedArgs = 1;
+	
+	/*Unsure about hex code when using extended due to it actually needing two hex values*/
+/*
+	strcpy(functions[0x18E6].functionName, "LDAB $");
+	functions[0x18E6].expectedArgs = 1;	
+*/
+
+	/*LDD/LDAD*/
+	
+	strcpy(functions[0xCC].functionName, "LDD #$");
+	functions[0xCC].expectedArgs = 2;
+	
+	strcpy(functions[0xDC].functionName, "LDD $");
+	functions[0xDC].expectedArgs = 1;
+	
+	strcpy(functions[0xFC].functionName, "LDD $");
+	functions[0xFC].expectedArgs = 2;
+	
+	strcpy(functions[0xEC].functionName, "LDD $");
+	functions[0xEC].expectedArgs = 1;
+	
 	/*Unsure about hex code when using extended due to it actually needing two hex values*/	
-	hexCodes[52].hexValue = 0x18E6;
-	hexCodes[52].expectedArgs = 1;
-	strcpy(hexCodes[52].functionName, "LDAB");
-	
-	/*LDD*/
-	
-	hexCodes[53].hexValue = 0xCC;
-	hexCodes[53].expectedArgs = 2;
-	strcpy(hexCodes[53].functionName, "LDD");
-	
-	hexCodes[54].hexValue = 0xDC;
-	hexCodes[54].expectedArgs = 1;
-	strcpy(hexCodes[54].functionName, "LDD");
-	
-	hexCodes[55].hexValue = 0xFC;
-	hexCodes[55].expectedArgs = 2;
-	strcpy(hexCodes[55].functionName, "LDD");
-	
-	hexCodes[56].hexValue = 0xEC;
-	hexCodes[56].expectedArgs = 1;
-	strcpy(hexCodes[56].functionName, "LDD");
-		
-	/*Unsure about hex code when using extended due to it actually needing two hex values*/	
-	hexCodes[57].hexValue = 0x18EC;
-	hexCodes[57].expectedArgs = 1;
-	strcpy(hexCodes[57].functionName, "LDD");
+/*
+	strcpy(functions[0x18EC].functionName, "LDD $");
+	functions[0x18EC].expectedArgs = 1;	
+*/
 	
 	/*Store Accumulator Functions*/
 	
 	/*STAA*/
 	
 	/*Unsure about the accepted args for this as it can take 2 but will assume top is 00*/	
-	hexCodes[58].hexValue = 0x97;
-	hexCodes[58].expectedArgs = 2;
-	strcpy(hexCodes[58].functionName, "STAA");
+	strcpy(functions[0x97].functionName, "STAA $");
+	functions[0x97].expectedArgs = 2;
 	
-	hexCodes[59].hexValue = 0xB7;
-	hexCodes[59].expectedArgs = 2;
-	strcpy(hexCodes[59].functionName, "STAA");
+	strcpy(functions[0xB7].functionName, "STAA $");
+	functions[0xB7].expectedArgs = 2;
 	
-	hexCodes[60].hexValue = 0xA7;
-	hexCodes[60].expectedArgs = 1;
-	strcpy(hexCodes[60].functionName, "STAA");
+	strcpy(functions[0xA7].functionName, "STAA $");
+	functions[0xA7].expectedArgs = 1;
 	
-	/*Unsure about hex code when using extended due to it actually needing two hex values*/	
-	hexCodes[61].hexValue = 0x18A7;
-	hexCodes[61].expectedArgs = 1;
-	strcpy(hexCodes[61].functionName, "STAA");
-
+	/*Unsure about hex code when using extended due to it actually needing two hex values*/
+/*
+	functions[0x18A7].expectedArgs = 1;
+	strcpy(functions[0x18A7].functionName, "STAA $");
+*/
+	
 	/*STAB*/
 	
 	/*Unsure about the accepted args for this as it can take 2 but will assume top is 00*/	
-	hexCodes[62].hexValue = 0xD7;
-	hexCodes[62].expectedArgs = 2;
-	strcpy(hexCodes[62].functionName, "STAB");
+	strcpy(functions[0xD7].functionName, "STAB $");
+	functions[0xD7].expectedArgs = 2;
 	
-	hexCodes[63].hexValue = 0xF7;
-	hexCodes[63].expectedArgs = 2;
-	strcpy(hexCodes[63].functionName, "STAB");
+	strcpy(functions[0xF7].functionName, "STAB $");
+	functions[0xF7].expectedArgs = 2;
 	
-	hexCodes[64].hexValue = 0xE7;
-	hexCodes[64].expectedArgs = 1;
-	strcpy(hexCodes[64].functionName, "STAB");
+	strcpy(functions[0xE7].functionName, "STAB $");
+	functions[0xE7].expectedArgs = 1;
 	
-	/*Unsure about hex code when using extended due to it actually needing two hex values*/	
-	hexCodes[65].hexValue = 0x18E7;
-	hexCodes[65].expectedArgs = 1;
-	strcpy(hexCodes[65].functionName, "STAB");
+	/*Unsure about hex code when using extended due to it actually needing two hex values*/
+/*
+	strcpy(functions[0x18E7].functionName, "STAB $");
+	functions[0x18E7].expectedArgs = 1;
+*/
 	
 	/*STD/STAD*/
+	
+	
+	strcpy(functions[0xDD].functionName, "STD $");
+	functions[0xDD].expectedArgs = 1;
+	
+	strcpy(functions[0xFD].functionName, "STD $");
+	functions[0xFD].expectedArgs = 2;
+	
+	strcpy(functions[0xED].functionName, "STD $");
+	functions[0xED].expectedArgs = 1;
+	
+	/*Unsure about hex code when using extended due to it actually needing two hex values*/
+/*
+	strcpy(functions[0x18ED].functionName, "STAD $");
+	functions[0x18ED].expectedArgs = 1;
+*/
 
-	hexCodes[66].hexValue = 0xDD;
-	hexCodes[66].expectedArgs = 1;
-	strcpy(hexCodes[66].functionName, "STD");
+	printf("Please enter start and end address in form [start] [end]: ");
+	gets(stringInp);
+	sscanf(stringInp, "%x %x", &startAddress, &endAddress);
+	printf("Start address: %x\n\r", startAddress);
+	printf("End address: %x\n\r", endAddress);		
+	ptrRange = endAddress - startAddress;	
+	printf("Range: %x - %i\n\r", ptrRange, ptrRange);
 	
-	hexCodes[67].hexValue = 0xFD;
-	hexCodes[67].expectedArgs = 2;
-	strcpy(hexCodes[67].functionName, "STD");
-	
-	hexCodes[68].hexValue = 0xED;
-	hexCodes[68].expectedArgs = 1;
-	strcpy(hexCodes[68].functionName, "STD");
-	
-	/*Unsure about hex code when using extended due to it actually needing two hex values*/	
-	hexCodes[69].hexValue = 0x18ED;
-	hexCodes[69].expectedArgs = 1;
-	strcpy(hexCodes[69].functionName, "STD");
-	
-	/*int i = 0;
-	
-	for (i; i < 70; i++) {
-		printf("hexCodes[%d]\n\r"
-		"Hex Value: %x\n\r"
-		"Expected Arguments: %x\n\r"
-		"Function Name: %s\n\n\r",
-		i, hexCodes[i].hexValue, hexCodes[i].expectedArgs, hexCodes[i].functionName);
-	}*/
+		
+	for (i = 0; i < ptrRange; i++) {
+		data = *startAddress;
+		printf("Address: %x\tData: %02x", startAddress, data);
+		
+		if (functions[data].expectedArgs == 0){
+			
+			strcpy(temp, functions[data].functionName);
+			printf("\t %s", temp);	
+
+		} else if (functions[data].expectedArgs == 1) {
+		/*
+			strcpy(temp, functions[data].functionName);
+						
+        	data = *(startAddress + 1);
+    		sprintf(temp2, "%02x", data);
+    		
+    		strcat(temp, temp2);
+			printf("\t %s", temp);	
+		*/	
+		} else if (functions[data].expectedArgs == 2) {
+			strcpy(temp, functions[data].functionName);
+						
+        	data = *(startAddress + 1);
+    		sprintf(temp2, "%02x", data);
+						
+			data = *(startAddress + 2);
+			sprintf(temp3, "%02x", data);
+			
+			strcat(temp2, temp3);
+				
+			strcat(temp, temp2);
+			printf("\t %s", temp);
+			
+		}		
+
+		
+		temp[0] = '\0';
+		temp2[0] = '\0';
+		temp3[0] = '\0';
+		
+		printf("\n\r");		
+		*startAddress++;
+	}
 }
