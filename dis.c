@@ -2,14 +2,14 @@
 #include <string.h>
 
 typedef struct assemblyFunc {
-    char functionName[8];
+    char functionName[10];
     int expectedArgs;
 } assemblyFunc;
 
 int main() {    
     struct assemblyFunc functions[255];
     unsigned char *startAddress, *endAddress, ptrRange, i, data, data2;
-    unsigned char stringInp[5];
+    unsigned char stringInp[10];
     char temp[10], temp2[5], temp3[5];
     
         /*Populate functions array with assembly function data*/
@@ -41,12 +41,12 @@ int main() {
 	strcpy(functions[0xB9].functionName, "ADCA $");
 	functions[0xB9].expectedArgs = 2;
 	
-	strcpy(functions[0xA9].functionName, "ADCA $");
+	strcpy(functions[0xA9].functionName, "ADCA $x, ");
 	functions[0xA96].expectedArgs = 1;
 
 	/*Unsure about hex code when using extended due to it actually needing two hex values*/
 /*		
-	strcpy(functions[0x18A9].functionName, "ADCA $");
+	strcpy(functions[0x18A9].functionName, "ADCA $y, ");
 	functions[0x18A9].expectedArgs = 1;
 */
 	
@@ -63,12 +63,12 @@ int main() {
 	strcpy(functions[0xF9].functionName, "ADCB $");
 	functions[0xF9].expectedArgs = 2;
 	
-	strcpy(functions[0xE9].functionName, "ADCB $");
+	strcpy(functions[0xE9].functionName, "ADCB $x, ");
 	functions[0xE9].expectedArgs = 1;
 
 	/*Unsure about hex code when using extended due to it actually needing two hex values*/
 /*	
-	strcpy(functions[0x18E9].functionName, "ADCB $");
+	strcpy(functions[0x18E9].functionName, "ADCB $y, ");
     functions[0x18E9].expectedArgs = 1;
 */
     
@@ -85,12 +85,12 @@ int main() {
 	strcpy(functions[0xBB].functionName, "ADDA $");
 	functions[0xBB].expectedArgs = 2;
 	
-	strcpy(functions[0xAB].functionName, "ADDA $");
+	strcpy(functions[0xAB].functionName, "ADDA $x, ");
 	functions[0xAB].expectedArgs = 1;
 
 	/*Unsure about hex code when using extended due to it actually needing two hex values*/
 /*
-	strcpy(functions[0x18AB].functionName, "ADDA $");
+	strcpy(functions[0x18AB].functionName, "ADDA $y, ");
 	functions[0x18AB].expectedArgs = 1;
 */
 	
@@ -107,12 +107,12 @@ int main() {
 	strcpy(functions[0xFB].functionName, "ADDB $");
 	functions[0xFB].expectedArgs = 2;
 	
-	strcpy(functions[0xEB].functionName, "ADDB $");
+	strcpy(functions[0xEB].functionName, "ADDB $x, ");
 	functions[0xEB].expectedArgs = 1;
 	
 	/*Unsure about hex code when using extended due to it actually needing two hex values*/
 /*
-	strcpy(functions[0x18EB].functionName, "ADDB $");
+	strcpy(functions[0x18EB].functionName, "ADDB $y, ");
 	functions[0x18EB].expectedArgs = 1;
 */
 
@@ -129,12 +129,12 @@ int main() {
 	strcpy(functions[0xF3].functionName, "ADDD $");
 	functions[0xF3].expectedArgs = 2;
 	
-	strcpy(functions[0xE3].functionName, "ADDD $");
+	strcpy(functions[0xE3].functionName, "ADDD $x, ");
 	functions[0xE3].expectedArgs = 1;
 	
 	/*Unsure about hex code when using extended due to it actually needing two hex values*/
 /*
-	strcpy(functions[0x18E3].functionName, "ADDD $");
+	strcpy(functions[0x18E3].functionName, "ADDD $y, ");
 	functions[0x18E3].expectedArgs = 1;
 */	
 
@@ -153,12 +153,12 @@ int main() {
 	strcpy(functions[0xB0].functionName, "SUBA $");
 	functions[0xB0].expectedArgs = 2;
 
-	strcpy(functions[0xA0].functionName, "SUBA $");
+	strcpy(functions[0xA0].functionName, "SUBA $x, ");
 	functions[0xA0].expectedArgs = 1;
 		
 	/*Unsure about hex code when using extended due to it actually needing two hex values*/
 /*
-	strcpy(functions[0x18A0].functionName, "SUBA $");
+	strcpy(functions[0x18A0].functionName, "SUBA $y, ");
 	functions[0x18A0].expectedArgs = 1;	
 */	
 
@@ -175,13 +175,13 @@ int main() {
 	strcpy(functions[0xF0].functionName, "SUBB $");
 	functions[0xF0].expectedArgs = 2;
 	
-	strcpy(functions[0xE0].functionName, "SUBB $");
+	strcpy(functions[0xE0].functionName, "SUBB $x, ");
 	functions[0xE0].expectedArgs = 1;
 	
 	/*Unsure about hex code when using extended due to it actually needing two hex values*/
 /*
 	functions[0x18E0].expectedArgs = 1;
-	strcpy(functions[0x18E0].functionName, "SUBB $");
+	strcpy(functions[0x18E0].functionName, "SUBB $y, ");
 */
 	
 	/*SUBD*/
@@ -195,12 +195,12 @@ int main() {
 	strcpy(functions[0xB3].functionName, "SUBD $");
 	functions[0xB3].expectedArgs = 2;
 	
-	strcpy(functions[0xA3].functionName, "SUBD $");
+	strcpy(functions[0xA3].functionName, "SUBD $x, ");
 	functions[0xA3].expectedArgs = 1;
 	
 	/*Unsure about hex code when using extended due to it actually needing two hex values*/
 /*
-	strcpy(functions[0x18A3].functionName, "SUBD $");
+	strcpy(functions[0x18A3].functionName, "SUBD $y, ");
 	functions[0x18A3].expectedArgs = 1;
 */
 	
@@ -219,12 +219,12 @@ int main() {
 	strcpy(functions[0xB6].functionName, "LDAA $");
 	functions[0xB6].expectedArgs = 2;	
 	
-	strcpy(functions[0xA6].functionName, "LDAA $");
+	strcpy(functions[0xA6].functionName, "LDAA $x, ");
 	functions[0xA6].expectedArgs = 1;
 	
 	/*Unsure about hex code when using extended due to it actually needing two hex values*/
 /*
-	strcpy(functions[0x18A6].functionName, "LDAA $");
+	strcpy(functions[0x18A6].functionName, "LDAA $y, ");
 	functions[0x18A6].expectedArgs = 1;
 */
 	
@@ -241,12 +241,12 @@ int main() {
 	strcpy(functions[0xF6].functionName, "LDAB $");
 	functions[0xF6].expectedArgs = 2;
 	
-	strcpy(functions[0xE6].functionName, "LDAB $");
+	strcpy(functions[0xE6].functionName, "LDAB $x, ");
 	functions[0xE6].expectedArgs = 1;
 	
 	/*Unsure about hex code when using extended due to it actually needing two hex values*/
 /*
-	strcpy(functions[0x18E6].functionName, "LDAB $");
+	strcpy(functions[0x18E6].functionName, "LDAB $y, ");
 	functions[0x18E6].expectedArgs = 1;	
 */
 
@@ -261,12 +261,12 @@ int main() {
 	strcpy(functions[0xFC].functionName, "LDD $");
 	functions[0xFC].expectedArgs = 2;
 	
-	strcpy(functions[0xEC].functionName, "LDD $");
+	strcpy(functions[0xEC].functionName, "LDD $x, ");
 	functions[0xEC].expectedArgs = 1;
 	
 	/*Unsure about hex code when using extended due to it actually needing two hex values*/	
 /*
-	strcpy(functions[0x18EC].functionName, "LDD $");
+	strcpy(functions[0x18EC].functionName, "LDD $y, ");
 	functions[0x18EC].expectedArgs = 1;	
 */
 	
@@ -281,13 +281,13 @@ int main() {
 	strcpy(functions[0xB7].functionName, "STAA $");
 	functions[0xB7].expectedArgs = 2;
 	
-	strcpy(functions[0xA7].functionName, "STAA $");
+	strcpy(functions[0xA7].functionName, "STAA $x, ");
 	functions[0xA7].expectedArgs = 1;
 	
 	/*Unsure about hex code when using extended due to it actually needing two hex values*/
 /*
 	functions[0x18A7].expectedArgs = 1;
-	strcpy(functions[0x18A7].functionName, "STAA $");
+	strcpy(functions[0x18A7].functionName, "STAA $y, ");
 */
 	
 	/*STAB*/
@@ -299,12 +299,12 @@ int main() {
 	strcpy(functions[0xF7].functionName, "STAB $");
 	functions[0xF7].expectedArgs = 2;
 	
-	strcpy(functions[0xE7].functionName, "STAB $");
+	strcpy(functions[0xE7].functionName, "STAB $x, ");
 	functions[0xE7].expectedArgs = 1;
 	
 	/*Unsure about hex code when using extended due to it actually needing two hex values*/
 /*
-	strcpy(functions[0x18E7].functionName, "STAB $");
+	strcpy(functions[0x18E7].functionName, "STAB $y, ");
 	functions[0x18E7].expectedArgs = 1;
 */
 	
@@ -317,12 +317,12 @@ int main() {
 	strcpy(functions[0xFD].functionName, "STD $");
 	functions[0xFD].expectedArgs = 2;
 	
-	strcpy(functions[0xED].functionName, "STD $");
+	strcpy(functions[0xED].functionName, "STD $x, ");
 	functions[0xED].expectedArgs = 1;
 	
 	/*Unsure about hex code when using extended due to it actually needing two hex values*/
 /*
-	strcpy(functions[0x18ED].functionName, "STAD $");
+	strcpy(functions[0x18ED].functionName, "STAD $y, ");
 	functions[0x18ED].expectedArgs = 1;
 */
 
@@ -330,7 +330,7 @@ int main() {
 	gets(stringInp);
 	sscanf(stringInp, "%x %x", &startAddress, &endAddress);
 	printf("Start address: %x\n\r", startAddress);
-	printf("End address: %x\n\r", endAddress);		
+	printf("End address: %x\n\r", endAddress);	
 	ptrRange = endAddress - startAddress;	
 	printf("Range: %x - %i\n\r", ptrRange, ptrRange);
 	
@@ -339,7 +339,7 @@ int main() {
 		data = *startAddress;
 		printf("Address: %x\tData: %02x", startAddress, data);
 		
-		if (functions[data].expectedArgs == 0){
+		if (functions[data].expectedArgs == 0) {
 			
 			strcpy(temp, functions[data].functionName);
 			printf("\t %s", temp);	
@@ -353,7 +353,7 @@ int main() {
     		
     		strcat(temp, temp2);
 			printf("\t %s", temp);	
-		*/	
+		*/
 		} else if (functions[data].expectedArgs == 2) {
 			strcpy(temp, functions[data].functionName);
 						
