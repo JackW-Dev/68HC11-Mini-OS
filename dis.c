@@ -8,11 +8,11 @@ typedef struct assemblyFunc {
 
 int main() {    
     struct assemblyFunc functions[255];
-    unsigned char *startAddress, *endAddress, ptrRange, i, data, data2;
+    unsigned char *startAddress, *endAddress, data, data2;
     unsigned char stringInp[10];
-    char temp[10], temp2[5], temp3[5];
-    
-        /*Populate functions array with assembly function data*/
+    char temp[15], temp2[10], temp3[10];
+
+    /*Populate functions array with assembly function data*/
     
     /*Addition Functions*/
     
@@ -331,30 +331,31 @@ int main() {
 	sscanf(stringInp, "%x %x", &startAddress, &endAddress);
 	printf("Start address: %x\n\r", startAddress);
 	printf("End address: %x\n\r", endAddress);	
-	ptrRange = endAddress - startAddress;	
-	printf("Range: %x - %i\n\r", ptrRange, ptrRange);
+		
+	while (startAddress <= endAddress) {
+		temp[0] = '\0';
+		temp2[0] = '\0';
+		temp3[0] = '\0';
 	
-		
-	for (i = 0; i < ptrRange; i++) {
 		data = *startAddress;
-		printf("Address: %x\tData: %02x", startAddress, data);
 		
-		if (functions[data].expectedArgs == 0) {
-			
-			strcpy(temp, functions[data].functionName);
-			printf("\t %s", temp);	
-
-		} else if (functions[data].expectedArgs == 1) {
-		/*
+		printf("%x\t %x", startAddress, data);
+				
+		strcpy(temp, functions[data].functionName);
+		printf("\t %s\t", temp);
+			 
+		if (functions[data].expectedArgs == 1) {
+		
 			strcpy(temp, functions[data].functionName);
 						
         	data = *(startAddress + 1);
     		sprintf(temp2, "%02x", data);
     		
-    		strcat(temp, temp2);
-			printf("\t %s", temp);	
-		*/
-		} else if (functions[data].expectedArgs == 2) {
+    		strcat(temp, temp2);	
+					
+			startAddress++;
+		}
+		if (functions[data].expectedArgs == 2) {
 			strcpy(temp, functions[data].functionName);
 						
         	data = *(startAddress + 1);
@@ -366,16 +367,17 @@ int main() {
 			strcat(temp2, temp3);
 				
 			strcat(temp, temp2);
-			printf("\t %s", temp);
-			
-		}		
 
-		
-		temp[0] = '\0';
-		temp2[0] = '\0';
-		temp3[0] = '\0';
+			startAddress = startAddress + 2;
+		}
+		if (functions[data].expectedArgs >= 0) {
+			printf("\t %s", temp);	
+		} else {
+			printf("\t .....");
+		}
 		
 		printf("\n\r");		
-		*startAddress++;
-	}
+		startAddress++;
+	} 
+	
 }
