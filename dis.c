@@ -339,43 +339,43 @@ int main() {
 	
 		data = *startAddress;
 		
-		printf("%x\t %x", startAddress, data);
+		printf("%x %x", startAddress, data);
 				
 		strcpy(temp, functions[data].functionName);
-		printf("\t %s\t", temp);
-			 
-		if (functions[data].expectedArgs == 1) {
 		
-			strcpy(temp, functions[data].functionName);
+		switch(functions[data].expectedArgs){
+			case 0:
+				printf("\t %s", temp);	
+				break;
+			case 1:
+				data = *(startAddress + 1);
+	    		sprintf(temp2, "%02x", data);
+	    		
+	    		strcat(temp, temp2);	
 						
-        	data = *(startAddress + 1);
-    		sprintf(temp2, "%02x", data);
-    		
-    		strcat(temp, temp2);	
-					
-			startAddress++;
-		}
-		if (functions[data].expectedArgs == 2) {
-			strcpy(temp, functions[data].functionName);
-						
-        	data = *(startAddress + 1);
-    		sprintf(temp2, "%02x", data);
-						
-			data = *(startAddress + 2);
-			sprintf(temp3, "%02x", data);
-			
-			strcat(temp2, temp3);
+				startAddress++;
 				
-			strcat(temp, temp2);
-
-			startAddress = startAddress + 2;
-		}
-		if (functions[data].expectedArgs >= 0) {
-			printf("\t %s", temp);	
-		} else {
-			printf("\t .....");
-		}
-		
+				printf("\t %s", temp);
+				break;
+			case 2:
+				data = *(startAddress + 1);
+	    		sprintf(temp2, "%02x", data);
+							
+				data = *(startAddress + 2);
+				sprintf(temp3, "%02x", data);
+				
+				strcat(temp2, temp3);
+					
+				strcat(temp, temp2);
+	
+				startAddress = startAddress + 2;
+				
+				printf("\t %s", temp);
+				break;	
+			default:
+				printf("\t .....");
+				break;
+		}						
 		printf("\n\r");		
 		startAddress++;
 	} 
