@@ -12,7 +12,23 @@ typedef struct extendedAssemblyFunc {
     int expectedArgs;
 } extendedAssemblyFunc;
 
-int main() {    
+int main() {
+	
+	/*
+	Function: Disassemble
+	Operation: Convert hex into assembly language code
+	Returns: Integer error code
+	Date: 20/02/2021
+	Version: 1.1
+	Change log:
+	v1.0 - Function stub outputting "disassemble"
+	v1.1 - Added assemblyFunction structs and populated array with assembly function details
+	v1.2 - Adjust structures to behave better with for loop
+	v1.3 - Remove for loop and utilise while loop instead	
+	v1.4 - Implement extended functions using different structure
+	Produced by: Jack Walker
+	*/
+  
     struct assemblyFunc functions[255];
 	struct extendedAssemblyFunc extendedFunctions[15];
     unsigned char *startAddress, *endAddress, data, data2, i, extendedFlag;
