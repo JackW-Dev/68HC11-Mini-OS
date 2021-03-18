@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 
+unsigned int asciitohex(char);
+
 void main() {
 	loadFile();
 }
@@ -22,14 +24,11 @@ int loadFile() {
 	/*Step 3 - Output some form of progress indicator*/
 	/*Step 4 - Output when file fully read*/	
 		
-	unsigned char *scsr, *scdr, data, status, charcount, flag;
-	/*Pre-initialised due to strange issue when outputting values using printf*/
-	unsigned char lenArr[3] = {'0', '0', '\0'}, originArr[5] = {'0', '0', '0', '0', '\0'}, dataArr[65], checksumArr[3] = {'0', '0', '\0'};
-	unsigned int lineLen, origin, checksum, i;
+	unsigned char *scsr, *scdr, data, status, charcount, flag, topNibble, bottomNibble, *addrPtr;
+	unsigned int lineLen, origin, hexData, sum, checksum, i;
 	int linecount;
 	
-	charcount = 0, linecount = 0, flag = 0,	status = 0;
-	dataArr[64] = '\0';
+	charcount = 0, linecount = 0, flag = 0,	status = 0, sum = 0;
 
 	scsr = (unsigned char *) 0x2e;
 	scdr = (unsigned char *) 0x2f;
@@ -58,46 +57,72 @@ int loadFile() {
 		
 		if (flag == 1) {						
 			/*Extract length of line*/	
-			while(((*scsr) & 0x20) == 0x00);			
-			lenArr[0] = *scdr;
+			while(((*scsr) & 0x20) == 0x00);
+			topNibble = asciitohex(*scdr);						
 			
 			while(((*scsr) & 0x20) == 0x00);
-			lenArr[1] = *scdr;
+			bottomNibble = asciitohex(*scdr);
+			
+			/*Shift top nibble to top half of byte and add bottom nibble to form whole byte*/
+			lineLen = topNibble << 4 | bottomNibble;
+			
+			sum += lineLen;
 						
-			/*Extract start address for line*/
-			for (i = 0; i < 4; i++) {
-				while(((*scsr) & 0x20) == 0x00);			
-				originArr[i] = *scdr;
-			}		
-						
-			/*TODO: Loop through reading each byte and appending to array*/		
-			for (i = 0; i < lineLen - 6; i++) {
-				while(((*scsr) & 0x20) == 0x00);			
-				dataArr[i] = *scdr;
-			}
-									
-			while(((*scsr) & 0x20) == 0x00);			
-			checksumArr[0] = *scdr;
+			/*Extract start address of line*/
+			while(((*scsr) & 0x20) == 0x00);
+			topNibble = asciitohex(*scdr);						
 			
 			while(((*scsr) & 0x20) == 0x00);
-			checksumArr[1] = *scdr;
+			bottomNibble = asciitohex(*scdr);
 			
-			sscanf(lenArr, "%x", &lineLen);			
-			printf("Line len: %x\n\r", lineLen);
+			/*Shift top nibble to top half of byte and add bottom nibble to form whole byte*/
+			origin = topNibble << 4 | bottomNibble;
 			
-			sscanf(originArr, "%x", &origin);			
-			printf("Origin: %x\n\r", origin);
+			sum += origin;
 			
-			printf("Data: %s\n\r", dataArr);
+			while(((*scsr) & 0x20) == 0x00);
+			topNibble = asciitohex(*scdr);						
 			
-			sscanf(checksumArr, "%x", &checksum);			
-			printf("Checksum: %x\n\r", checksum);
-									
-			flag = 0;
+			while(((*scsr) & 0x20) == 0x00);
+			bottomNibble = asciitohex(*scdr);
+			
+			sum += (topNibble << 4 | bottomNibble);
+			
+			/*Shift value already stored into the top byte and add the other formed byte to the bottom byte*/
+			origin = (origin << 8) + (topNibble << 4 | bottomNibble);
+			
+			addrPtr = (char *)origin;
+			
+			/*Loop through data coming in and write direct to memory, starting at the address stored in origin*/		
+			for (i = 0; i < lineLen - 3; i++) {
+				while(((*scsr) & 0x20) == 0x00);
+				topNibble = asciitohex(*scdr);						
+			
+				while(((*scsr) & 0x20) == 0x00);
+				bottomNibble = asciitohex(*scdr);
 				
-			/*Do rest extract length, address*/
-			/*You can use XON/XOFF or change delay on hyperterm*/
-			/*Don't forget to ignore all characters after line length*/
+				*addrPtr = topNibble << 4 | bottomNibble;
+				sum += *addrPtr;
+				addrPtr++;
+			}
+			
+			/*Extract checksum*/
+			while(((*scsr) & 0x20) == 0x00);
+			topNibble = asciitohex(*scdr);						
+			
+			while(((*scsr) & 0x20) == 0x00);
+			bottomNibble = asciitohex(*scdr);
+			
+			/*Shift top nibble to top half of byte and add bottom nibble to form whole byte*/
+			checksum = topNibble << 4 | bottomNibble;
+			
+			/*Mask to 8 bit and then invert*/
+			sum = sum | 0xff00;
+			sum = ~sum;
+			
+			/*printf("Line len: %02x\t Origin: %04x\t Checksum: %02x\t Calculated checksum: %02x\n\r", lineLen, origin, checksum, sum);*/
+											
+			flag = 0;
 		}	
 			
 	} while (status == 0);
@@ -106,3 +131,21 @@ int loadFile() {
 	printf("Last S1 Address + data + checksum = %02x\n\r", ((charcount - 1) / 2) - 1);
 	return(0);
 }
+
+/*'0' in ascii is 0x30 and 'a' in ascii is 0x41*/
+unsigned int asciitohex(char c) {
+	if ('0' <= c && c <= '9') {
+		return c - '0';
+	}
+	if ('A' <= c && c <= 'F') {
+		return c + 10 - 'A';
+	}
+}
+
+
+
+
+
+
+
+
