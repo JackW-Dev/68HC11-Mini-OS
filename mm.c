@@ -9,22 +9,20 @@ void main() {
 	Date: 20/02/2021
 	Version: 1.0
 	Change log:
-	v1.0 - Will iterate over addresses and ask for input. Error - All inputs are being written as 72
+	v1.0 - Will iterate over addresses and ask for input. Error - All inputs are being written as 72.
 	v1.1 - Iterates over addresses and allows the user to update value. TODO: Validate input.
+	v1.2 - Implemented isxdigit() to validate input.
+	v1.3 - Corrected ability to skip using enter key.
 	Produced by: Jack Walker
 	*/
 	
-	/*Step 1 - Ask for a start address to edit*/
-	/*Step 2 - Read user input for address and prompt for new data*/
-	/*Step 3 - Validate that the data is storable and store (loop if can't store)*/
-	/*Step 4 - Increment to next address and repeat process*/
-	/*Step 5 - Terminate if '.' is input*/
-
-	unsigned char stringInp[5], dataInp[3];
+	unsigned char stringInp[10], dataInp[10];
 	unsigned char *startAddress;
-	unsigned char data, topNibble, bottomNibble;
+	unsigned char data, skipFlag, check, check2, check3;
 	unsigned int hexData;
-	int status = 0, i;
+	int status, i;
+	
+	status = 0;
 	
 	printf("Modify Memory\n\r");
 	
@@ -33,29 +31,53 @@ void main() {
 	sscanf(stringInp, "%x", &startAddress);	
 	
 	do {
+		/*Reset the dataInp array, data and skipFlag to reduce risk of remaining data causing errors*/
+		
+		dataInp[0] = '\0';
+		data = '\0';
+		skipFlag = 0;
+		
 		printf("%04x\t%02x : ", startAddress, *startAddress);
 		gets(dataInp);
 		
 		sscanf(dataInp, "%c", &data);
-		printf("%c\n\r", data);
+				
+		/*If the input is a full stop, set the status flag to stop MM and set skipFlag to prevent modify*/
 		
 		if (data == '.') {
 			status = 1;
+			skipFlag = 1;
 		}
+		
+		/*If the input is a new line, increment the start address and set skipFlag to prevent modify*/
+		
 		if (data == '\n') {
 			startAddress++;
+			skipFlag = 1;
 		}
 		
-		sscanf(dataInp, "%02x", &hexData);
-		printf("%02x\n\r", hexData);
+		/*If skipFlag is not set, validate the input and either modify memory or report an error*/
 		
-		if (hexData <= 255) {
-			*startAddress = hexData;
-			startAddress++;
-		} else {
-			prinf("Invalid input."); 
-			printf("Please use . to stop, carriage return to skip or Hex to input.\n\r");
-		}			
+		if (skipFlag == 0) {
+								
+			/*Check if valid hex input:
+			- Both dataInp[0] and dataInp[1] are hex and dataInp[2] is '\0'
+			- dataInp[0] is hex and dataInp[1] is '\0'
+			- dataInp[0] is ' ', dataInp[1] is hex and dataInp[2] is '\0'*/		
+				
+			check = (isxdigit(dataInp[0]) && isxdigit(dataInp[1]) && dataInp[2] == '\0');
+			check2 = (isxdigit(dataInp[0]) && dataInp[1] == '\0');
+			check3 = (dataInp[0] == ' ' && isxdigit(dataInp[1]) && dataInp[2] == '\0');
+					
+			if (check || check2 || check3) {
+				sscanf(dataInp, "%02x", &hexData);
+				*startAddress = hexData;
+				startAddress++;
+			} else {	
+				printf("Invalid input detected: %s.\n\r", dataInp); 
+				printf("Please use . to stop, carriage return to skip or Hex to input.\n\r");	
+			}
+		}					
 	} while (status == 0);
 }
 
