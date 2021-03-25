@@ -2,6 +2,7 @@
 #include <string.h>
 
 unsigned int asciitohex(char);
+void loadFile();
 
 typedef struct lineData {
     unsigned int lineLen, origin, checksum, sum;
@@ -11,27 +12,27 @@ void main() {
 	loadFile();
 }
 
-int loadFile() {
+void loadFile() {
 	/*
 	Function: Load File
 	Operation: Load a Motorola S19 file into memory
 	Returns: Integer error code
-	Date: 20/02/2021
-	Version: 1.0
+	Date: 18/03/2021
+	Version: 1.4
 	Change log:
 	v1.0 - Implemented basic file load that will read in the length of the file
 	v1.1 - Complete overhaul for reading method, now using nibbles
 	v1.2 - Reads in length and start address
 	v1.3 - Reads file data into memory and keeps a running total of the bytes (for use with checksum)
+	v1.4 - Implemented checksum validation, printf of values after reading in and a structure for holding line data
 	Produced by: Jack Walker
 	*/
 	
 	struct lineData lineDetails[10];
-	unsigned char *scsr, *scdr, data, status, charcount, flag, topNibble, bottomNibble, *addrPtr;
-	unsigned int lineLen, origin, hexData, checksum, i;
-	int linecount;
-	
-	charcount = 0, linecount = 0, flag = 0,	status = 0;
+	unsigned char *scsr, *scdr, *addrPtr, data, status = 0, count = 0, flag = 0, topNibble, bottomNibble, errorStatus = 0;
+	int i, linecount = 0;
+
+	/*printf("Load File\n\r");*/
 
 	scsr = (unsigned char *) 0x2e;
 	scdr = (unsigned char *) 0x2f;
@@ -43,36 +44,43 @@ int loadFile() {
 		
 		data = *scdr;
 		
-		if (data == 'S') {
-			flag = 0; /*Reset char count */	
+		if(data == 'S') {
+			
+			/*Reset char count*/	
+			flag = 0; 
 			
 			while(((*scsr) & 0x20) == 0x00);
 			
 			data = *scdr;
-			if (data == '1') {
-				charcount = 0;	
+			if(data == '1') {
+				count = 0;	
+				
 				/*Optional to save time remove*/	
 				putchar('~');
+				
 				/*Tell to start counting characters*/				
 				flag = 1;						
 			}
-			if (data == '9') {
-				status = 1; /*Temp stop if S9 detected*/
+			if(data == '9') {
+				
+				/*Stop if S9 detected*/
+				status = 1; 
 			}
 		}
 		
-		if (flag == 1) {						
+		if(flag == 1) {
+								
 			/*Extract length of line*/	
 			while(((*scsr) & 0x20) == 0x00);
 			topNibble = asciitohex(*scdr);						
 			
 			while(((*scsr) & 0x20) == 0x00);
 			bottomNibble = asciitohex(*scdr);
-			
+						
 			/*Shift top nibble to top half of byte and add bottom nibble to form whole byte*/
-			lineLen = topNibble << 4 | bottomNibble;
+			lineDetails[linecount].lineLen = topNibble << 4 | bottomNibble;
 			
-			lineDetails[linecount].sum += lineLen;
+			lineDetails[linecount].sum += lineDetails[linecount].lineLen;
 						
 			/*Extract start address of line*/
 			while(((*scsr) & 0x20) == 0x00);
@@ -81,10 +89,13 @@ int loadFile() {
 			while(((*scsr) & 0x20) == 0x00);
 			bottomNibble = asciitohex(*scdr);
 			
-			/*Shift top nibble to top half of byte and add bottom nibble to form whole byte*/
-			origin = topNibble << 4 | bottomNibble;
+			/*Increment byte count*/
+			count++;
 			
-			lineDetails[linecount].sum += origin;
+			/*Shift top nibble to top half of byte and add bottom nibble to form whole byte*/
+			lineDetails[linecount].origin = topNibble << 4 | bottomNibble;
+			
+			lineDetails[linecount].sum += lineDetails[linecount].origin;
 			
 			while(((*scsr) & 0x20) == 0x00);
 			topNibble = asciitohex(*scdr);						
@@ -92,20 +103,26 @@ int loadFile() {
 			while(((*scsr) & 0x20) == 0x00);
 			bottomNibble = asciitohex(*scdr);
 			
+			/*Increment byte count*/
+			count++;
+			
 			lineDetails[linecount].sum += (topNibble << 4 | bottomNibble);
 			
 			/*Shift value already stored into the top byte and add the other formed byte to the bottom byte*/
-			origin = (origin << 8) + (topNibble << 4 | bottomNibble);
+			lineDetails[linecount].origin = (lineDetails[linecount].origin << 8) + (topNibble << 4 | bottomNibble);
 			
-			addrPtr = (char *)origin;
+			addrPtr = (char *)lineDetails[linecount].origin;
 			
 			/*Loop through data coming in and write direct to memory, starting at the address stored in origin*/		
-			for (i = 0; i < lineLen - 3; i++) {
+			for(i = 0; i < lineDetails[linecount].lineLen - 3; i++) {
 				while(((*scsr) & 0x20) == 0x00);
 				topNibble = asciitohex(*scdr);						
 			
 				while(((*scsr) & 0x20) == 0x00);
 				bottomNibble = asciitohex(*scdr);
+				
+				/*Increment byte count*/
+				count++;
 				
 				*addrPtr = topNibble << 4 | bottomNibble;
 				lineDetails[linecount].sum += *addrPtr;
@@ -119,49 +136,69 @@ int loadFile() {
 			while(((*scsr) & 0x20) == 0x00);
 			bottomNibble = asciitohex(*scdr);
 			
+			/*Increment byte count*/
+			count++;
+			
 			/*Shift top nibble to top half of byte and add bottom nibble to form whole byte*/
-			checksum = topNibble << 4 | bottomNibble;
+			lineDetails[linecount].checksum = topNibble << 4 | bottomNibble;
 			
 			/*Mask to 8 bit and then invert*/
 			lineDetails[linecount].sum = lineDetails[linecount].sum | 0xff00;
 			lineDetails[linecount].sum = ~lineDetails[linecount].sum;
 			
-			/*printf("Line len: %02x\t Origin: %04x\t Checksum: %02x\t Calculated checksum: %02x\n\r", lineLen, origin, checksum, lineDetails[linecount].sum);*/
-			
-			lineDetails[linecount].lineLen = lineLen;
-			lineDetails[linecount].origin = origin;			
-			lineDetails[linecount].checksum = checksum;
-			
-			linecount++;							
-			flag = 0;
-		}	
-			
-	} while (status == 0);
+			if(lineDetails[linecount].sum == lineDetails[linecount].checksum) {
+				linecount++;							
+				
+			} else {
+				printf("\n\r");
+				printf("Error loading line %d.\n\r", linecount + 1);
+				printf("Calculated checksum %02x does not match expected checksum %02x.\n\r", lineDetails[linecount].sum, lineDetails[linecount].checksum);
+				printf("Aborting load process!\n\r");
+				errorStatus = 1;
+				status = 1;
+			}
+			flag = 0;			
+		}			
+	} while(status == 0);
 	
-	printf("\n\rDownload completed S %d lines\n\r", linecount);
-	printf("Last S1 Address + data + checksum = %02x\n\r", ((charcount - 1) / 2) - 1);
-	
-	for (i = 0; i < linecount; i++){
+	printf("\n\r");
+
+	for(i = 0; i < linecount + 1; i++) {
 		printf("Line len: %02x\t Origin: %04x\t Checksum: %02x\t Calculated checksum: %02x\n\r", lineDetails[i].lineLen, lineDetails[i].origin, lineDetails[i].checksum, lineDetails[i].sum);
 	}
 	
-	return(0);
+	if(errorStatus == 0) {
+		printf("S19 File Download Completed - %d Lines Read Into Memory\n\r", linecount + 1);
+		printf("Program starts at %04x\n\r", lineDetails[0].origin);
+	}	
 }
 
-/*'0' in ascii is 0x30 and 'a' in ascii is 0x41*/
-unsigned int asciitohex(char c) {
-	if ('0' <= c && c <= '9') {
-		return c - '0';
+unsigned int asciitohex(char thisChar) {
+	/*
+	Function: Ascii to Hex
+	Operation: Convert Ascii value to hex
+	Returns: Unsigned int hex value converted from Ascii values
+	Date: 18/03/2021
+	Version: 1.1
+	Change log:
+	v1.0 - Converts 0-9 chars to hex and not ascii hex
+	v1.1 - Converts A-F chars to hex and not ascii hex
+	Produced by: Jack Walker
+	*/
+	
+	/*If in the range of char '0' to '9', subtracting '0' will convert Ascii to hex*/	
+	if('0' <= thisChar && thisChar <= '9') {
+		return thisChar - '0';
 	}
-	if ('A' <= c && c <= 'F') {
-		return c + 10 - 'A';
+	
+	/*If in the range of char 'A' to 'F', adding 10 and subtracting 'A' will convert Ascii to hex*/	
+	if('A' <= thisChar && thisChar <= 'F') {
+		return thisChar + 10 - 'A';
+	}
+	
+	/*If in the range of char 'a' to 'f', adding 10 and subtracting 'a' will convert Ascii to hex*/	
+	if('a' <= thisChar && thisChar <= 'f') {
+		return thisChar + 10 - 'a';
 	}
 }
-
-
-
-
-
-
-
 
