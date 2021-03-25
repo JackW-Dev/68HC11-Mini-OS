@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 
+void disassemble(unsigned int, unsigned int);
+
 typedef struct assemblyFunc {
     char functionName[10];
     int expectedArgs;
@@ -14,12 +16,21 @@ typedef struct extendedAssemblyFunc {
 
 int main() {
 	
+	/*Unit test accepting start and end address. 
+	To be tested using testData.s19 (and the start and end address of it)*/
+	unsigned int start = 0x4600, end = 0x46AA;
+	
+	disassemble(start, end);
+}
+
+void disassemble(unsigned int start, unsigned int end) {
+	
 	/*
 	Function: Disassemble
 	Operation: Convert hex into assembly language code
 	Returns: Integer error code
-	Date: 20/02/2021
-	Version: 1.1
+	Date: 11/03/2021
+	Version: 1.4
 	Change log:
 	v1.0 - Function stub outputting "disassemble"
 	v1.1 - Added assemblyFunction structs and populated array with assembly function details
@@ -32,7 +43,7 @@ int main() {
     struct assemblyFunc functions[255];
 	struct extendedAssemblyFunc extendedFunctions[15];
     unsigned char *startAddress, *endAddress, data, data2, i, extendedFlag;
-    unsigned char stringInp[10];
+    /*unsigned char stringInp[10];*/
     char temp[15], temp2[10], temp3[10];
 
     /*Populate functions array with assembly function data*/
@@ -47,11 +58,9 @@ int main() {
     	
 	/*ADCA*/
 	
-	/*Usually one byte but can be two*/	
 	strcpy(functions[0x89].functionName, "ADCA #$");
 	functions[0x89].expectedArgs = 1;	
-	
-	/*Unsure about the accepted args for this as it can take 2 but will assume top is 00*/	
+
 	strcpy(functions[0x99].functionName, "ADCA $");
 	functions[0x99].expectedArgs = 1;
 	
@@ -62,12 +71,10 @@ int main() {
 	functions[0xA9].expectedArgs = 1;
 	
 	/*ADCB*/
-	
-	/*Usually one byte but can be two*/	
+
 	strcpy(functions[0xC9].functionName, "ADCB #$");
 	functions[0xC9].expectedArgs = 1;
-	
-	/*Unsure about the accepted args for this as it can take 2 but will assume top is 00*/	
+
 	strcpy(functions[0xD9].functionName, "ADCB $");
 	functions[0xD9].expectedArgs = 1;
 	
@@ -79,11 +86,9 @@ int main() {
  
     /*ADDA*/
     
-	/*Usually one byte but can be two*/	
 	strcpy(functions[0x8B].functionName, "ADDA #$");
 	functions[0x8B].expectedArgs = 1;
 	
-	/*Unsure about the accepted args for this as it can take 2 but will assume top is 00*/	
 	strcpy(functions[0x9B].functionName, "ADDA $");
 	functions[0x9B].expectedArgs = 1;
 
@@ -95,11 +100,9 @@ int main() {
 	
 	/*ADDB*/
 	
-	/*Usually one byte but can be two*/	
 	strcpy(functions[0xCB].functionName, "ADDB #$");
 	functions[0xCB].expectedArgs = 1;
 		
-	/*Unsure about the accepted args for this as it can take 2 but will assume top is 00*/	
 	strcpy(functions[0xDB].functionName, "ADDB $");
 	functions[0xDB].expectedArgs = 1;
 	
@@ -113,8 +116,7 @@ int main() {
 	
 	strcpy(functions[0xC3].functionName, "ADDD #$");	
 	functions[0xC3].expectedArgs = 2;
-	
-	/*Unsure about the accepted args for this as it can take 2 but will assume top is 00*/	
+
 	strcpy(functions[0xD3].functionName, "ADDD $");
 	functions[0xD3].expectedArgs = 1;
 	
@@ -125,14 +127,12 @@ int main() {
 	functions[0xE3].expectedArgs = 1;
 	
 	/*Subtraction Functions*/
-	
+		
 	/*SUBA*/
-	
-	/*Usually one byte but can be two*/	
+
 	strcpy(functions[0x80].functionName, "SUBA #$");
 	functions[0x80].expectedArgs = 1;
 	
-	/*Unsure about the accepted args for this as it can take 2 but will assume top is 00*/	
 	strcpy(functions[0x90].functionName, "SUBA $");
 	functions[0x90].expectedArgs = 1;
 
@@ -144,11 +144,9 @@ int main() {
 	
 	/*SUBB*/
 
-	/*Usually one byte but can be two*/	
 	strcpy(functions[0xC0].functionName, "SUBB #$");
 	functions[0xC0].expectedArgs = 1;
-	
-	/*Unsure about the accepted args for this as it can take 2 but will assume top is 00*/	
+
 	strcpy(functions[0xD0].functionName, "SUBB $");
 	functions[0xD0].expectedArgs = 1;
 	
@@ -175,12 +173,10 @@ int main() {
 	/*Load Accumulator Functions*/	
 	
 	/*LDAA*/
-	
-	/*Usually one byte but can be two*/	
+
 	strcpy(functions[0x86].functionName, "LDAA #$");
 	functions[0x86].expectedArgs = 1;
-	
-	/*Unsure about the accepted args for this as it can take 2 but will assume top is 00*/	
+
 	strcpy(functions[0x96].functionName, "LDAA $");
 	functions[0x96].expectedArgs = 1;
 	
@@ -191,12 +187,10 @@ int main() {
 	functions[0xA6].expectedArgs = 1;
 		
 	/*LDAB*/
-	
-	/*Usually one byte but can be two*/	
+
 	strcpy(functions[0xC6].functionName, "LDAB #$");
 	functions[0xC6].expectedArgs = 1;	
-	
-	/*Unsure about the accepted args for this as it can take 2 but will assume top is 00*/	
+
 	strcpy(functions[0xD6].functionName, "LDAB $");
 	functions[0xD6].expectedArgs = 1;	
 	
@@ -224,7 +218,6 @@ int main() {
 	
 	/*STAA*/
 	
-	/*Unsure about the accepted args for this as it can take 2 but will assume top is 00*/	
 	strcpy(functions[0x97].functionName, "STAA $");
 	functions[0x97].expectedArgs = 1;
 	
@@ -236,7 +229,6 @@ int main() {
 		
 	/*STAB*/
 	
-	/*Unsure about the accepted args for this as it can take 2 but will assume top is 00*/	
 	strcpy(functions[0xD7].functionName, "STAB $");
 	functions[0xD7].expectedArgs = 1;
 	
@@ -319,41 +311,49 @@ int main() {
 	extendedFunctions[14].expectedArgs = 1;
 	extendedFunctions[14].functionCode = 0xED;
 
-
+	/*print("Disassemble"\n\r);
+	
 	printf("Please enter start and end address in form [start] [end]: ");
 	gets(stringInp);
-	sscanf(stringInp, "%x %x", &startAddress, &endAddress);
+	sscanf(stringInp, "%x %x", &startAddress, &endAddress);*/
+	
+	startAddress = (unsigned char *)start;
+	endAddress = (unsigned char *)end;
 	
 	printf("Address\t Hex\t\t Assembly\n\r");
 	
-	/*Will loop until range is covered*/
-	while (startAddress <= endAddress - 1) {
-		/*Reset strings to null*/
+	/*Will loop until range is covered*/	
+	while(startAddress <= endAddress - 1) {
+		
+		/*Reset strings to null to reduce risk of remaining data causing errors*/		
 		temp[0] = '\0';
 		temp2[0] = '\0';
 		temp3[0] = '\0';
 		extendedFlag = 0;
 						
-		/*Get the hex value held at the start address*/
+		/*Get the hex value held at the start address*/		
 		data = *startAddress;
 		
-		/*Check for extended address functions*/
-		if (data == 0x18) {
-			/*Get the hex value held at start address + 1 (extended mode uses 2 byte code)*/
+		/*Check for extended address functions*/		
+		if(data == 0x18) {
+			
+			/*Get the hex value held at start address + 1 (extended mode uses 2 byte code)*/			
 			data2 = *(startAddress + 1);
 			
-			/*Iterate through the array of extended address functions*/
-			for (i = 0; i < 15; i++) {
-				/*If function code matches data 2 (all extended are 0x18~~ in format)*/
-				if (extendedFunctions[i].functionCode == data2) {
+			/*Iterate through the array of extended address functions*/			
+			for(i = 0; i < 15; i++) {
+				
+				/*If function code matches data 2 (all extended are 0x18~~ in format)*/				
+				if(extendedFunctions[i].functionCode == data2) {
 					extendedFlag = 1;
-					/*Output address followed by data and data2 (this will output the function's full hex code)*/
+					
+					/*Output address followed by data and data2 (this will output the function's full hex code)*/					
 					printf("%x\t %02x%02x", startAddress, data, data2);		
 					strcpy(temp, extendedFunctions[i].functionName);
 					
 					/*Switch case based on the expected arguments
-					This will ensure any relevant data is output with the function*/
-					switch(extendedFunctions[i].expectedArgs){
+					This will ensure any relevant data is output with the function*/					
+					switch(extendedFunctions[i].expectedArgs) {
 						case 0:
 							printf("\t\t %s\n\r", temp);
 							startAddress++;
@@ -375,19 +375,20 @@ int main() {
 				}
 			}
 			
-			if (extendedFlag == 0) {
+			if(extendedFlag == 0) {
 				printf("%x\t %02x\n\r", startAddress, data);
 			}
 							
-		/*Handle all normal address functions*/				
+		/*Handle all normal address functions*/						
 		} else {
-			/*Output address followed by data (this will output the function's hex code)*/					
+			
+			/*Output address followed by data (this will output the function's hex code)*/							
 			printf("%x\t %02x", startAddress, data);
 				
 			strcpy(temp, functions[data].functionName);
 			
 			/*Switch case based on the expected arguments
-			This will ensure any relevant data is output with the function*/
+			This will ensure any relevant data is output with the function*/			
 			switch(functions[data].expectedArgs) {
 				case 0:					
 					printf("\t\t %s\n\r", temp);
