@@ -33,7 +33,8 @@ void main() {
 	do {
 		/*Reset the dataInp array, data and skipFlag to reduce risk of remaining data causing errors*/
 		
-		dataInp[0] = '\0';
+		dataInp[0] = '\n';
+		dataInp[1] = '\0';
 		data = '\0';
 		skipFlag = 0;
 		
