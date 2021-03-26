@@ -4,7 +4,7 @@
 void modifyMemory(unsigned int);
 
 void main() {
-	unsigned int start = 0x4600;
+	unsigned int start = 0x6000;
 
 	modifyMemory(start);
 }

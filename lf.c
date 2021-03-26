@@ -163,12 +163,14 @@ void loadFile() {
 	
 	printf("\n\r");
 
-	for(i = 0; i < linecount + 1; i++) {
+	/*
+	for(i = 0; i < linecount; i++) {
 		printf("Line len: %02x\t Origin: %04x\t Checksum: %02x\t Calculated checksum: %02x\n\r", lineDetails[i].lineLen, lineDetails[i].origin, lineDetails[i].checksum, lineDetails[i].sum);
 	}
+	*/
 	
 	if(errorStatus == 0) {
-		printf("S19 File Download Completed - %d Lines Read Into Memory\n\r", linecount + 1);
+		printf("S19 File Download Completed - %d Lines Read Into Memory\n\r", linecount);
 		printf("Program starts at %04x\n\r", lineDetails[0].origin);
 	}	
 }

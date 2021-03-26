@@ -4,7 +4,7 @@
 unsigned int asciitohex(char);
 
 void main() {
-	unsigned char asciiVals[22];
+	unsigned char asciiVals[16];
 	unsigned int hexVal;
 	int i;
 	

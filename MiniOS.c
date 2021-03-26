@@ -39,7 +39,7 @@ Produced by: Jack Walker
 
 void main() {
 /*
-Function: Main (formerly menu
+Function: Main (formerly menu)
 Operation: Provide a validated menu for the user to select system operation mode
 Returns: An integer value representing the desired action
 Date: 25/03/2021
@@ -56,7 +56,7 @@ v1.7 - Fully validated user inputs to match validation of existing solution
 Produced by: Jack Walker
 */
 	char inputString[20], inputMode[8], checkString[8], checkString2[8];
-	unsigned int validData = 0, operationMode = 0, inputStartAddress = 0, inputEndAddress = 0, i;
+	unsigned int inputStartAddress = 0, inputEndAddress = 0, i;
 	unsigned char check, check2;
 	
 	for(;;) {
@@ -67,172 +67,142 @@ Produced by: Jack Walker
 		printf("Disassemble Code - dis [START ADDRESS] [END ADDRESS]\n\r");
 		printf("Load File - lf\n\r");
 		printf("Demo Program - demo\n\r");
+			
+		/*Clear variables to reduce risk of error*/
+		inputMode[0] = '\0';
+		inputStartAddress = 0;
+		inputEndAddress = 0;
+		check = 0;
+		check2 = 0;
 		
-		do {
-			
-			/*Clear variables to reduce risk of error*/
-			inputMode[0] = '\0';
-			inputStartAddress = 0;
-			inputEndAddress = 0;
-			operationMode = 0;
-			validData = 0;
-			check = 0;
-			check2 = 0;
-			
-			/*Get user input for mode and params*/
-			printf("Mode: ");
-			gets(inputString);
-			
-			sscanf(inputString, "%s %s %s", &inputMode, &checkString, &checkString2);
-			sscanf(inputString, "%s %x %x", &inputMode, &inputStartAddress, &inputEndAddress);
-						
-			/*Test print statement to check values have been set		
-			printf("%s - %s - %s\n\r", inputMode, checkString, checkString2);
-			printf("%s - %x - %x\n\r", inputMode, inputStartAddress, inputEndAddress);*/
-			
-			for(i = 0; i < 5; i++) {
-				inputMode[i] = tolower(inputMode[i]);
-			}
-						
-			if(strcmp(inputMode, "mm") == 0) {
-				
-				/*Valid input should be 3 or 4 digit hex*/
-				check = (isxdigit(checkString[0]) && isxdigit(checkString[1]) && isxdigit(checkString[2]) && checkString[3] == '\0');
-				check2 = (isxdigit(checkString[0]) && isxdigit(checkString[1]) && isxdigit(checkString[2]) && isxdigit(checkString[3]) && checkString[4] == '\0');
-				
-				if(check || check2) {
+		/*Get user input for mode and params*/
+		printf("Mode: ");
+		gets(inputString);
+		
+		sscanf(inputString, "%s %s %s", &inputMode, &checkString, &checkString2);
+		sscanf(inputString, "%s %x %x", &inputMode, &inputStartAddress, &inputEndAddress);
 					
-					/*End address will be empty if correct input routine followed*/
-					if(inputEndAddress == 0x0000) {
-										
-						/*Between 400 and 7DFF as a memory boundary*/
-						if(0x400 <= inputStartAddress && inputStartAddress <= 0x7dff) {
-							
-							/*All tests passed, data is valid*/
-							operationMode = 1;
-							validData = 1;
-							
-						} else {
-							printf("Invalid address given. User gave %04x and value must be in range 0x400 -> 0x7dff\n\r", inputStartAddress);
-						}											
+		/*Test print statement to check values have been set		
+		printf("%s - %s - %s\n\r", inputMode, checkString, checkString2);
+		printf("%s - %x - %x\n\r", inputMode, inputStartAddress, inputEndAddress);*/
+		
+		for(i = 0; i < 5; i++) {
+			inputMode[i] = tolower(inputMode[i]);
+		}
+					
+		if(strcmp(inputMode, "mm") == 0) {
+			
+			/*Valid input should be 3 or 4 digit hex*/
+			check = (isxdigit(checkString[0]) && isxdigit(checkString[1]) && isxdigit(checkString[2]) && checkString[3] == '\0');
+			check2 = (isxdigit(checkString[0]) && isxdigit(checkString[1]) && isxdigit(checkString[2]) && isxdigit(checkString[3]) && checkString[4] == '\0');
+			
+			if(check || check2) {
+				
+				/*End address will be empty if correct input routine followed*/
+				if(inputEndAddress == 0x0000) {
+									
+					/*Between 400 and 7DFF as a memory boundary*/
+					if(0x400 <= inputStartAddress && inputStartAddress <= 0x7dff) {
+						
+						/*All tests passed, data is valid*/
+						printf("Memory Modify\n\r");
+						modifyMemory(inputStartAddress);
+						
 					} else {
-						printf("Invalid input provided, please only provide a start address.\n\r");
+						printf("Invalid address given. User gave %04x and value must be in range 0x400 -> 0x7dff\n\r", inputStartAddress);
+					}											
+				} else {
+					printf("Invalid input provided, please only provide a start address.\n\r");
+				}					
+			} else {
+				printf("Invalid address given. User gave %s and value must be hex 0-9 A-F\n\r", checkString);
+			}								
+		} else if(strcmp(inputMode, "dm") == 0) {									
+							
+			/*Valid input should be 3 or 4 digit hex*/
+			check = (isxdigit(checkString[0]) && isxdigit(checkString[1]) && isxdigit(checkString[2]) && checkString[3] == '\0');
+			check2 = (isxdigit(checkString[0]) && isxdigit(checkString[1]) && isxdigit(checkString[2]) && isxdigit(checkString[3]) && checkString[4] == '\0');
+			
+			if(check || check2) {
+				
+				/*End address will be empty if correct input routine followed*/
+				if(inputEndAddress == 0x0000) {
+									
+					/*Between 400 and 7DFF as a memory boundary*/
+					if(0x400 <= inputStartAddress && inputStartAddress <= 0x7dff) {
+						
+						/*All tests passed, data is valid*/
+						printf("Display Memory\n\r");
+						displayMemory(inputStartAddress);
+						
+					} else {
+						printf("Invalid address given. User gave %04x and value must be in range 0x400 -> 0x7dff\n\r", inputStartAddress);
 					}					
 				} else {
-					printf("Invalid address given. User gave %s and value must be hex 0-9 A-F\n\r", checkString);
-				}								
-			} else if(strcmp(inputMode, "dm") == 0) {									
-								
+					printf("Invalid input provided, please only provide a start address.\n\r");
+				}
+			} else {
+				printf("Invalid address given. User gave %s and value must be hex 0-9 A-F\n\r", checkString);
+			}						
+		} else if(strcmp(inputMode, "dis") == 0) {											
+			
+			/*Valid input should be 3 or 4 digit hex*/
+			check = (isxdigit(checkString[0]) && isxdigit(checkString[1]) && isxdigit(checkString[2]) && checkString[3] == '\0');
+			check2 = (isxdigit(checkString[0]) && isxdigit(checkString[1]) && isxdigit(checkString[2]) && isxdigit(checkString[3]) && checkString[4] == '\0');
+			
+			if(check || check2) {
+				
 				/*Valid input should be 3 or 4 digit hex*/
-				check = (isxdigit(checkString[0]) && isxdigit(checkString[1]) && isxdigit(checkString[2]) && checkString[3] == '\0');
-				check2 = (isxdigit(checkString[0]) && isxdigit(checkString[1]) && isxdigit(checkString[2]) && isxdigit(checkString[3]) && checkString[4] == '\0');
+				check = (isxdigit(checkString2[0]) && isxdigit(checkString2[1]) && isxdigit(checkString2[2]) && checkString2[3] == '\0');
+				check2 = (isxdigit(checkString2[0]) && isxdigit(checkString2[1]) && isxdigit(checkString2[2]) && isxdigit(checkString2[3]) && checkString2[4] == '\0');
 				
 				if(check || check2) {
 					
-					/*End address will be empty if correct input routine followed*/
-					if(inputEndAddress == 0x0000) {
-										
-						/*Between 400 and 7DFF as a memory boundary*/
-						if(0x400 <= inputStartAddress && inputStartAddress <= 0x7dff) {
+					check = 0x400 <= inputStartAddress && inputStartAddress <= 0x7dff;
+					check2 = 0x400 <= inputEndAddress && inputEndAddress <= 0x7dff;
+
+					/*Between 400 and 7DFF as a memory boundary*/
+					if(check && check2) {
+						
+						/*Start address must be less than end address*/
+						if(inputStartAddress < inputEndAddress) {
 							
 							/*All tests passed, data is valid*/
-							operationMode = 2;
-							validData = 1;
+							printf("Disassemble\n\r");
+							disassemble(inputStartAddress, inputEndAddress);
 							
 						} else {
-							printf("Invalid address given. User gave %04x and value must be in range 0x400 -> 0x7dff\n\r", inputStartAddress);
-						}					
+							printf("Invalid address format. User gave %04x %04x. Start address must be less than end address.\n\r", inputStartAddress, inputEndAddress);
+						}							
 					} else {
-						printf("Invalid input provided, please only provide a start address.\n\r");
+						printf("Invalid address given. User gave %04x and value must be in range 0x400 -> 0x7dff\n\r", inputStartAddress);
 					}
 				} else {
-					printf("Invalid address given. User gave %s and value must be hex 0-9 A-F\n\r", checkString);
-				}						
-			} else if(strcmp(inputMode, "dis") == 0) {											
-				
-				/*Valid input should be 3 or 4 digit hex*/
-				check = (isxdigit(checkString[0]) && isxdigit(checkString[1]) && isxdigit(checkString[2]) && checkString[3] == '\0');
-				check2 = (isxdigit(checkString[0]) && isxdigit(checkString[1]) && isxdigit(checkString[2]) && isxdigit(checkString[3]) && checkString[4] == '\0');
-				
-				if(check || check2) {
-					
-					/*Valid input should be 3 or 4 digit hex*/
-					check = (isxdigit(checkString2[0]) && isxdigit(checkString2[1]) && isxdigit(checkString2[2]) && checkString2[3] == '\0');
-					check2 = (isxdigit(checkString2[0]) && isxdigit(checkString2[1]) && isxdigit(checkString2[2]) && isxdigit(checkString2[3]) && checkString2[4] == '\0');
-					
-					if(check || check2) {
-						
-						check = 0x400 <= inputStartAddress && inputStartAddress <= 0x7dff;
-						check2 = 0x400 <= inputEndAddress && inputEndAddress <= 0x7dff;
-
-						/*Between 400 and 7DFF as a memory boundary*/
-						if(check && check2) {
-							
-							/*Start address must be less than end address*/
-							if(inputStartAddress < inputEndAddress) {
-								
-								/*All tests passed, data is valid*/
-								operationMode = 3;
-								validData = 1;
-								
-							} else {
-								printf("Invalid address format. User gave %04x %04x. Start address must be less than end address.\n\r", inputStartAddress, inputEndAddress);
-							}							
-						} else {
-							printf("Invalid address given. User gave %04x and value must be in range 0x400 -> 0x7dff\n\r", inputStartAddress);
-						}
-					} else {
-						printf("Invalid end address given. User gave %s and value must be hex 0-9 A-F\n\r", checkString);
-					}				
-				} else {
-					printf("Invalid start address given. User gave %s and value must be hex 0-9 A-F\n\r", checkString);
-				}							
-			} else if(strcmp(inputMode, "lf") == 0) {
-				
-				/*If any extra data is given, ignore it*/
-				if(inputStartAddress != 0 || inputEndAddress != 0) {
-					printf("Additional data has been ignored.\n\r");
+					printf("Invalid end address given. User gave %s and value must be hex 0-9 A-F\n\r", checkString);
 				}				
-				operationMode = 4;
-				validData = 1;
-			
-			} else if(strcmp(inputMode, "demo") == 0) {	
-			
-				/*If any extra data is given, ignore it*/
-				if(inputStartAddress != 0 || inputEndAddress != 0) {
-					printf("Additional data has been ignored.\n\r");
-				}						
-				operationMode = 5;	
-				validData = 1;
-						
 			} else {
-				printf("Invalid command please try again!\n\r");
-				inputMode[0] = '\0';
-			}
-				
-		} while(validData != 1);
+				printf("Invalid start address given. User gave %s and value must be hex 0-9 A-F\n\r", checkString);
+			}							
+		} else if(strcmp(inputMode, "lf") == 0) {
 			
-		switch(operationMode) {
-			case 1:
-				printf("Memory Modify\n\r");
-				modifyMemory(inputStartAddress);
-				break;
-			case 2:
-				printf("Display Memory\n\r");
-				displayMemory(inputStartAddress);
-				break;
-			case 3:
-				printf("Disassemble\n\r");
-				disassemble(inputStartAddress, inputEndAddress);
-				break;
-			case 4:
-				printf("Load File\n\r");
-				loadFile();
-				break;
-			case 5:
-				printf("Demo\n\r");
-				demo();
-				break;
+			/*If any extra data is given, ignore it*/
+			if(inputStartAddress != 0 || inputEndAddress != 0) {
+				printf("Additional data has been ignored.\n\r");
+			}				
+			printf("Load File\n\r");
+			loadFile();
+		
+		} else if(strcmp(inputMode, "demo") == 0) {	
+		
+			/*If any extra data is given, ignore it*/
+			if(inputStartAddress != 0 || inputEndAddress != 0) {
+				printf("Additional data has been ignored.\n\r");
+			}						
+			printf("Demo\n\r");
+			demo();					
+		} else {
+			printf("Invalid command please try again!\n\r");
+			inputMode[0] = '\0';
 		}	
 	}	
 }
@@ -936,12 +906,14 @@ void loadFile() {
 	
 	printf("\n\r");
 
-	for(i = 0; i < linecount + 1; i++) {
+	/*
+	for(i = 0; i < linecount; i++) {
 		printf("Line len: %02x\t Origin: %04x\t Checksum: %02x\t Calculated checksum: %02x\n\r", lineDetails[i].lineLen, lineDetails[i].origin, lineDetails[i].checksum, lineDetails[i].sum);
 	}
+	*/
 	
 	if(errorStatus == 0) {
-		printf("S19 File Download Completed - %d Lines Read Into Memory\n\r", linecount + 1);
+		printf("S19 File Download Completed - %d Lines Read Into Memory\n\r", linecount);
 		printf("Program starts at %04x\n\r", lineDetails[0].origin);
 	}	
 }

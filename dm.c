@@ -4,9 +4,21 @@
 void displayMemory(unsigned int);
 
 void main() {
-	unsigned int start = 0x4600;
+	unsigned int start = 0x6000, i;
+	unsigned char *memPtr;
 
 	displayMemory(start);
+	
+	/*ASCII Check*/
+	
+	memPtr = (unsigned char *)start;
+	
+	for(i = 0; i < 256; i++) {
+		*memPtr = i;
+		memPtr++;
+	}	
+	displayMemory(start);
+	displayMemory(start + 0x00A0);
 }
 
 void displayMemory(unsigned int start) {

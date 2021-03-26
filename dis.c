@@ -18,7 +18,7 @@ int main() {
 	
 	/*Unit test accepting start and end address. 
 	To be tested using testData.s19 (and the start and end address of it)*/
-	unsigned int start = 0x4600, end = 0x46AA;
+	unsigned int start = 0x6000, end = 0x60A9;
 	
 	disassemble(start, end);
 }
